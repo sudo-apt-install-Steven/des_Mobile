@@ -28,6 +28,7 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "scheme": "desmobile"
   }
 }
