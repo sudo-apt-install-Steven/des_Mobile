@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, ScrollView, TextInput, TouchableOpacity, SafeAreaViewBase } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { styles } from './_styles';
+import { styles } from '../../styles/home_styles';
 import { router } from 'expo-router';
 import Botao from '../../components/Botao';
 import EntradaTexto from '../../components/EntradaTexto';

@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { styles } from './_styles';
+import { styles } from '../../styles/cadastro_styles';
 import { router } from 'expo-router';
 
 export default function Cadastro() {

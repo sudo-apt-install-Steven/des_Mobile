@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { styles } from './_styles';
+import { styles } from '../../styles/teste_styles';
 
 export default function Teste() {
   return (
