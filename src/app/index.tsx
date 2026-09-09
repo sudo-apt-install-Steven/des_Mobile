@@ -9,7 +9,7 @@ export default function Hub() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <Text style={styles.title}>Hub de Atividades</Text>
           <Text style={styles.subtitle}>Selecione uma atividade para visualizar</Text>
@@ -24,7 +24,12 @@ export default function Hub() {
           <Botao titulo="Atividade 5 (Cadastro Usuário)" onPress={() => router.push('/Atividade5')} />
           <Botao titulo="Atividade 6 (Cálculo Ração)" onPress={() => router.push('/Atividade6')} />
           <Botao titulo="Atividade 7 (Seguro Veicular)" onPress={() => router.push('/Atividade7')} />
+          <Botao titulo="Atividade 8 (Cadastro com Map)" onPress={() => router.push('/Atividade8_map')} />
+          <Botao titulo="Atividade 9 (Tarefas - FlatList)" onPress={() => router.push('/Atividade9_FlatList')} />
+          <Botao titulo="Atividade 9 (Produtos - Map)" onPress={() => router.push('/Atividade9_map')} />
         </View>
+
+        <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );

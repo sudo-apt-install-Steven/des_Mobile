@@ -1,0 +1,127 @@
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#1E1E1E',
+  },
+  content: {
+    flex: 1,
+    padding: 24,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
+    marginTop: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#9CA3AF',
+  },
+  card: {
+    backgroundColor: '#262626',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 14,
+    color: '#D1D5DB',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: '#171717',
+    borderWidth: 1,
+    borderColor: '#3F3F46',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: '#FFFFFF',
+    marginBottom: 16,
+  },
+  addBtn: {
+    backgroundColor: '#2563EB',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  addBtnText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  listCard: {
+    backgroundColor: '#262626',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#333',
+  },
+  listTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 16,
+  },
+  contatoItem: {
+    backgroundColor: '#171717',
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#333',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  contatoInfo: {
+    flex: 1,
+    marginRight: 10,
+  },
+  contatoNome: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  contatoTelefone: {
+    color: '#9CA3AF',
+    fontSize: 14,
+  },
+  deleteBtn: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#EF4444',
+  },
+  deleteBtnText: {
+    color: '#EF4444',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  emptyText: {
+    color: '#6B7280',
+    fontSize: 14,
+    textAlign: 'center',
+    fontStyle: 'italic',
+    paddingVertical: 12,
+  },
+});
