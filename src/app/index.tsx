@@ -27,6 +27,7 @@ export default function Hub() {
           <Botao titulo="Atividade 8 (Cadastro com Map)" onPress={() => router.push('/Atividade8_map')} />
           <Botao titulo="Atividade 9 (Tarefas - FlatList)" onPress={() => router.push('/Atividade9_FlatList')} />
           <Botao titulo="Atividade 9 (Produtos - Map)" onPress={() => router.push('/Atividade9_map')} />
+          <Botao titulo="Atividade 10 (Tab Navigation)" onPress={() => router.push('/Atividade10_tabnav')} />
         </View>
 
         <View style={{ height: 40 }} />
