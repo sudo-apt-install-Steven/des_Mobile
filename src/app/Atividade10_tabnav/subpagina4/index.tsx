@@ -11,21 +11,21 @@ export default function Subpagina4() {
       titulo: 'Meta Diária Concluída',
       descricao: 'Você atingiu 8.000 passos hoje. Continue assim!',
       horario: 'Há 25 min',
-      icone: require('../../../assets/icons/fire.png'),
+      icone: require('../../../../assets/icons/fire.png'),
     },
     {
       id: '2',
       titulo: 'Hora de se Hidratar',
       descricao: 'Beba 250ml de água para manter o ritmo de hoje.',
       horario: 'Há 1 hora',
-      icone: require('../../../assets/icons/water.png'),
+      icone: require('../../../../assets/icons/water.png'),
     },
     {
       id: '3',
       titulo: 'Batimento Cardíaco Estável',
       descricao: 'Sua frequência média pós-treino foi de 72 bpm.',
       horario: 'Há 3 horas',
-      icone: require('../../../assets/icons/heart.png'),
+      icone: require('../../../../assets/icons/heart.png'),
     },
   ];
 
