@@ -32,6 +32,7 @@ export default function Subpagina4() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.mainWrapper}>
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <Text style={styles.greetingText}>Notificações</Text>
@@ -78,6 +79,7 @@ export default function Subpagina4() {
         >
           <Text style={styles.actionButtonText}>Voltar ao Hub Principal</Text>
         </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

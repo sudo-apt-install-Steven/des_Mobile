@@ -7,6 +7,11 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F1F5F9',
   },
+  mainWrapper: {
+    width: '100%',
+    maxWidth: 720,
+    alignSelf: 'center',
+  },
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 12,

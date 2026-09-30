@@ -20,6 +20,7 @@ export default function Subpagina2() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.mainWrapper}>
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <Text style={styles.greetingText}>Relatórios</Text>
@@ -124,6 +125,7 @@ export default function Subpagina2() {
             </View>
             <Text style={[styles.activityValue, { color: '#F59E0B' }]}>20%</Text>
           </View>
+        </View>
         </View>
       </ScrollView>
     </SafeAreaView>

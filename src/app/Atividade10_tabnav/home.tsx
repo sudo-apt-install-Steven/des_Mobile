@@ -8,6 +8,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.mainWrapper}>
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <Text style={styles.greetingText}>Olá, Steven 👋</Text>
@@ -107,6 +108,7 @@ export default function HomeScreen() {
             </View>
             <Text style={styles.activityValue}>+360 kcal</Text>
           </View>
+        </View>
         </View>
       </ScrollView>
     </SafeAreaView>

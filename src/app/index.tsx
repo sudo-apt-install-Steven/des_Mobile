@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { router } from 'expo-router';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { styles } from '../styles/hub_styles';
+import { useResponsive, useNativeDriver } from '../hooks/useResponsive';
 
 type BimestreFilter = 'todos' | '2' | '1';
 
@@ -124,22 +125,24 @@ const ATIVIDADES_1_BIMESTRE: ActivityItem[] = [
   },
 ];
 
-// Componente animado para cards com toque suave
+// Componente animado para cards com toque suave e compatibilidade multiplataforma
 function AnimatedCard({
   children,
   onPress,
   style,
+  containerStyle,
 }: {
   children: React.ReactNode;
   onPress: () => void;
   style?: any;
+  containerStyle?: any;
 }) {
   const scale = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
     Animated.spring(scale, {
       toValue: 0.97,
-      useNativeDriver: true,
+      useNativeDriver,
       speed: 30,
     }).start();
   };
@@ -147,7 +150,7 @@ function AnimatedCard({
   const handlePressOut = () => {
     Animated.spring(scale, {
       toValue: 1,
-      useNativeDriver: true,
+      useNativeDriver,
       friction: 4,
     }).start();
   };
@@ -157,6 +160,7 @@ function AnimatedCard({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={onPress}
+      style={containerStyle}
     >
       <Animated.View style={[{ transform: [{ scale }] }, style]}>
         {children}
@@ -167,6 +171,14 @@ function AnimatedCard({
 
 export default function Hub() {
   const [filtro, setFiltro] = useState<BimestreFilter>('todos');
+  const { isTablet, isDesktop, maxContentWidth } = useResponsive();
+
+  // Media Query: 1 coluna em telefones, 2 em tablets e 3 em desktops
+  const cardWidthStyle = isDesktop
+    ? { width: '31.8%' as const }
+    : isTablet
+    ? { width: '48.5%' as const }
+    : { width: '100%' as const };
 
   const show2Bimestre = filtro === 'todos' || filtro === '2';
   const show1Bimestre = filtro === 'todos' || filtro === '1';
@@ -183,6 +195,7 @@ export default function Hub() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <View style={[styles.mainWrapper, { maxWidth: maxContentWidth }]}>
         {/* Cabeçalho */}
         <View style={styles.header}>
           <View style={styles.headerBadge}>
@@ -382,6 +395,7 @@ export default function Hub() {
               {ATIVIDADES_1_BIMESTRE.map((item) => (
                 <AnimatedCard
                   key={item.id}
+                  containerStyle={cardWidthStyle}
                   style={styles.glassCard}
                   onPress={() => router.push(item.route as any)}
                 >
@@ -409,6 +423,7 @@ export default function Hub() {
             React Native · Expo SDK 54+ · Expo Router
           </Text>
           <Text style={styles.footerBadge}>Projetos & Atividades Práticas</Text>
+        </View>
         </View>
       </ScrollView>
     </SafeAreaView>

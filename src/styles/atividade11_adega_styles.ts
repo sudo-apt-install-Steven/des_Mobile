@@ -1,6 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
-
-const { width } = Dimensions.get('window');
+import { StyleSheet, Platform } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
@@ -10,6 +8,11 @@ export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#400303',
+  },
+  mainWrapper: {
+    width: '100%',
+    maxWidth: 900,
+    alignSelf: 'center',
   },
 
   // Header
@@ -67,6 +70,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 28,
     alignItems: 'center',
     zIndex: 2,
+    maxWidth: 680,
   },
   inicioTitle: {
     fontSize: 34,
@@ -74,9 +78,16 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     textAlign: 'center',
     marginBottom: 14,
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 6,
+    ...Platform.select({
+      web: {
+        textShadow: '0px 2px 6px rgba(0, 0, 0, 0.75)',
+      },
+      default: {
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 6,
+      },
+    }),
   },
   inicioSubtitle: {
     fontSize: 16,
@@ -84,9 +95,16 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
     fontWeight: '400',
-    textShadowColor: 'rgba(0, 0, 0, 0.85)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
+    ...Platform.select({
+      web: {
+        textShadow: '0px 1px 4px rgba(0, 0, 0, 0.85)',
+      },
+      default: {
+        textShadowColor: 'rgba(0, 0, 0, 0.85)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 4,
+      },
+    }),
   },
 
   // ================= Tela Catálogo =================
@@ -118,11 +136,18 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+      },
+    }),
   },
   wineImageWrapper: {
     width: 60,
@@ -179,11 +204,18 @@ export const styles = StyleSheet.create({
     marginBottom: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.04)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.04,
+        shadowRadius: 3,
+        elevation: 1,
+      },
+    }),
   },
   contactIcon: {
     marginBottom: 8,
@@ -200,12 +232,19 @@ export const styles = StyleSheet.create({
   },
 
   // ================= Bottom Tab Bar =================
+  bottomBarWrapper: {
+    backgroundColor: '#400303',
+    width: '100%',
+    alignItems: 'center',
+  },
   bottomBar: {
     flexDirection: 'row',
     height: 58,
     backgroundColor: '#400303',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    width: '100%',
+    maxWidth: 600,
   },
   tabItem: {
     flex: 1,

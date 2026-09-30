@@ -1,16 +1,18 @@
-import { StyleSheet, Dimensions, Platform } from 'react-native';
-
-const { width } = Dimensions.get('window');
+import { StyleSheet, Platform } from 'react-native';
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0D0914',
   },
+  mainWrapper: {
+    width: '100%',
+    alignSelf: 'center',
+  },
   ambientGlowTop: {
     position: 'absolute',
     top: -100,
-    left: width * 0.15,
+    left: '15%',
     width: 260,
     height: 260,
     borderRadius: 130,
@@ -85,6 +87,9 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     marginBottom: 26,
+    maxWidth: 600,
+    width: '100%',
+    alignSelf: 'center',
   },
   selectorTab: {
     flex: 1,
@@ -99,11 +104,18 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(139, 92, 246, 0.32)',
     borderWidth: 1,
     borderColor: 'rgba(196, 181, 253, 0.4)',
-    shadowColor: '#8B5CF6',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 6px rgba(139, 92, 246, 0.3)',
+      },
+      default: {
+        shadowColor: '#8B5CF6',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 4,
+      },
+    }),
   },
   selectorTabText: {
     fontSize: 13,
@@ -174,11 +186,18 @@ export const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: 'rgba(248, 113, 113, 0.35)',
     marginBottom: 18,
-    shadowColor: '#EF4444',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 8,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 8px 16px rgba(239, 68, 68, 0.25)',
+      },
+      default: {
+        shadowColor: '#EF4444',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.25,
+        shadowRadius: 16,
+        elevation: 8,
+      },
+    }),
   },
   specularLine: {
     height: 1,
@@ -255,11 +274,18 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 14,
     gap: 8,
-    shadowColor: '#EF4444',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 4,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 8px rgba(239, 68, 68, 0.4)',
+      },
+      default: {
+        shadowColor: '#EF4444',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
   },
   featuredButtonText: {
     color: '#FFFFFF',
@@ -299,9 +325,12 @@ export const styles = StyleSheet.create({
     marginTop: 2,
   },
 
-  // Standard Glass Activity Cards (1º Bimestre)
+  // Standard Glass Activity Cards (1º Bimestre) - Responsivo
   cardsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 12,
+    justifyContent: 'space-between',
   },
   glassCard: {
     borderRadius: 16,
@@ -309,11 +338,18 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.09)',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.15)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+        elevation: 3,
+      },
+    }),
   },
   glassCardInner: {
     flexDirection: 'row',

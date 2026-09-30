@@ -26,6 +26,7 @@ export default function Subpagina1() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.mainWrapper}>
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <Text style={styles.greetingText}>Métricas & Peso</Text>
@@ -99,6 +100,7 @@ export default function Subpagina1() {
         >
           <Text style={styles.actionButtonText}>+ Registrar Nova Pesagem</Text>
         </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

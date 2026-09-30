@@ -12,6 +12,7 @@ export default function Subpagina3() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.mainWrapper}>
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <Text style={styles.greetingText}>Perfil</Text>
@@ -103,6 +104,7 @@ export default function Subpagina3() {
         >
           <Text style={styles.actionButtonText}>Sair para o Hub de Atividades</Text>
         </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

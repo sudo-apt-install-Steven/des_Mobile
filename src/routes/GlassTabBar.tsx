@@ -5,16 +5,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  Dimensions,
   Image,
   Platform,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const BAR_HORIZONTAL_MARGIN = 16;
-const BAR_WIDTH = SCREEN_WIDTH - BAR_HORIZONTAL_MARGIN * 2;
+import { useResponsive } from '../hooks/useResponsive';
 
 const ICON_MAP: { [key: string]: any } = {
   Home: require('../../assets/icons/home.png'),
@@ -30,20 +26,27 @@ const LABEL_MAP: { [key: string]: string } = {
   Account: 'Account',
 };
 
-export function GlassTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
-  const tabCount = state.routes.length;
-  const tabWidth = BAR_WIDTH / tabCount;
+export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
+  const { width: screenWidth, isTablet, isDesktop, useNativeDriver } = useResponsive();
+
+  // Media Query responsiva: em tablets/desktops limita a largura para centralizar elegantemente
+  const maxAllowedWidth = isDesktop ? 500 : isTablet ? 440 : screenWidth - 32;
+  const barWidth = Math.min(screenWidth - 32, maxAllowedWidth);
+
+  const tabCount = state.routes.length || 1;
+  const tabWidth = barWidth / tabCount;
 
   const translateX = useRef(new Animated.Value(state.index * tabWidth)).current;
   const scaleAnims = useRef(state.routes.map(() => new Animated.Value(1))).current;
 
+  // Atualiza a posição do indicador quando o índice da aba ou a largura da tela muda
   useEffect(() => {
     Animated.spring(translateX, {
       toValue: state.index * tabWidth,
       damping: 18,
       stiffness: 160,
       mass: 0.8,
-      useNativeDriver: true,
+      useNativeDriver,
     }).start();
 
     scaleAnims.forEach((anim, idx) => {
@@ -52,28 +55,28 @@ export function GlassTabBar({ state, descriptors, navigation }: BottomTabBarProp
           Animated.timing(anim, {
             toValue: 1.18,
             duration: 120,
-            useNativeDriver: true,
+            useNativeDriver,
           }),
           Animated.spring(anim, {
             toValue: 1.0,
             damping: 12,
             stiffness: 180,
-            useNativeDriver: true,
+            useNativeDriver,
           }),
         ]).start();
       } else {
         Animated.timing(anim, {
           toValue: 1.0,
           duration: 100,
-          useNativeDriver: true,
+          useNativeDriver,
         }).start();
       }
     });
-  }, [state.index, tabWidth]);
+  }, [state.index, tabWidth, useNativeDriver]);
 
   return (
     <View style={styles.outerContainer} pointerEvents="box-none">
-      <View style={styles.floatingWrapper}>
+      <View style={[styles.floatingWrapper, { width: barWidth }]}>
         <BlurView intensity={Platform.OS === 'ios' ? 70 : 45} tint="light" style={styles.blurContainer}>
           <View style={styles.specularShine} />
 
@@ -161,18 +164,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   floatingWrapper: {
-    width: BAR_WIDTH,
     height: 70,
     borderRadius: 36,
     overflow: 'hidden',
     backgroundColor: 'rgba(255, 255, 255, 0.75)',
     borderWidth: 1.5,
     borderColor: 'rgba(255, 255, 255, 0.85)',
-    shadowColor: '#0f172a',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.12,
-    shadowRadius: 22,
-    elevation: 16,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 10px 22px rgba(15, 23, 42, 0.12)',
+      },
+      default: {
+        shadowColor: '#0f172a',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.12,
+        shadowRadius: 22,
+        elevation: 16,
+      },
+    }),
   },
   blurContainer: {
     flex: 1,
@@ -197,11 +206,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.88)',
     borderWidth: 1.2,
     borderColor: 'rgba(255, 255, 255, 0.95)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 4,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.08)',
+      },
+      default: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 10,
+        elevation: 4,
+      },
+    }),
     overflow: 'hidden',
   },
   lensHighlight: {

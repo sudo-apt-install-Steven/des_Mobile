@@ -74,10 +74,11 @@ export default function Atividade11Adega() {
             contentContainerStyle={styles.catalogoScroll}
             showsVerticalScrollIndicator={false}
           >
-            <Text style={styles.catalogoTitle}>Nossos vinhos</Text>
-            <Text style={styles.catalogoSubtitle}>
-              Trabalhamos com o melhor vinho dos seguintes tipos: Vinho branco, vinho rosé, vinho tinto e vinho seco.
-            </Text>
+            <View style={styles.mainWrapper}>
+              <Text style={styles.catalogoTitle}>Nossos vinhos</Text>
+              <Text style={styles.catalogoSubtitle}>
+                Trabalhamos com o melhor vinho dos seguintes tipos: Vinho branco, vinho rosé, vinho tinto e vinho seco.
+              </Text>
 
             {/* Vinho Branco */}
             <View style={styles.wineCard}>
@@ -146,6 +147,7 @@ export default function Atividade11Adega() {
                 </Text>
               </View>
             </View>
+            </View>
           </ScrollView>
         )}
 
@@ -155,9 +157,10 @@ export default function Atividade11Adega() {
             contentContainerStyle={styles.contatoScroll}
             showsVerticalScrollIndicator={false}
           >
-            <Text style={styles.contatoTitle}>
-              Entre em contato conosco para comprar nossos produtos
-            </Text>
+            <View style={styles.mainWrapper}>
+              <Text style={styles.contatoTitle}>
+                Entre em contato conosco para comprar nossos produtos
+              </Text>
 
             {/* Telefone */}
             <View style={styles.contactCard}>
@@ -206,12 +209,14 @@ export default function Atividade11Adega() {
               <Text style={styles.contactLabel}>Instagram:</Text>
               <Text style={styles.contactValue}>@adegapreferida</Text>
             </View>
+            </View>
           </ScrollView>
         )}
       </View>
 
       {/* Bottom Tab Bar */}
-      <View style={styles.bottomBar}>
+      <View style={styles.bottomBarWrapper}>
+        <View style={styles.bottomBar}>
         {/* Aba Início */}
         <TouchableOpacity
           style={[
@@ -284,6 +289,7 @@ export default function Atividade11Adega() {
           </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
+  </SafeAreaView>
   );
 }
