@@ -81,7 +81,7 @@ export default function Atividade9Map() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor="#047857" />
+      <StatusBar style="light" />
 
       {/* Cabeçalho */}
       <View style={styles.header}>

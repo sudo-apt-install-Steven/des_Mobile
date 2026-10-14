@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { BottomTabBarProps } from 'expo-router/tabs';
 import { useResponsive } from '../hooks/useResponsive';
 
 const ICON_MAP: { [key: string]: any } = {
@@ -49,7 +49,7 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
       useNativeDriver,
     }).start();
 
-    scaleAnims.forEach((anim, idx) => {
+    scaleAnims.forEach((anim: Animated.Value, idx: number) => {
       if (idx === state.index) {
         Animated.sequence([
           Animated.timing(anim, {
@@ -94,7 +94,7 @@ export function GlassTabBar({ state, navigation }: BottomTabBarProps) {
           </Animated.View>
 
           <View style={styles.tabsRow}>
-            {state.routes.map((route, index) => {
+            {state.routes.map((route: any, index: number) => {
               const isFocused = state.index === index;
               const iconSource = ICON_MAP[route.name] || ICON_MAP.Home;
               const label = LABEL_MAP[route.name] || route.name;

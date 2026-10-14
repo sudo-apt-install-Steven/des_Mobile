@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from 'expo-router/tabs';
 import { GlassTabBar } from './GlassTabBar';
 import HomeScreen from '../app/Atividade10_tabnav/home';
 import Subpagina1 from '../app/Atividade10_tabnav/subpagina1';
@@ -12,7 +12,7 @@ export function BottomRoutes() {
   return (
     <Tab.Navigator
       initialRouteName="Home"
-      tabBar={(props) => <GlassTabBar {...props} />}
+      tabBar={(props: any) => <GlassTabBar {...props} />}
       screenOptions={{
         headerShown: false,
       }}

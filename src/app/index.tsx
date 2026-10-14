@@ -238,7 +238,7 @@ export default function Hub() {
                   filtro === 'todos' ? styles.selectorCountTextActive : null,
                 ]}
               >
-                13
+                14
               </Text>
             </View>
           </TouchableOpacity>
@@ -271,7 +271,7 @@ export default function Hub() {
                   filtro === '2' ? styles.selectorCountTextActive : null,
                 ]}
               >
-                Novo
+                2
               </Text>
             </View>
           </TouchableOpacity>
@@ -318,8 +318,50 @@ export default function Hub() {
                 <View style={styles.sectionIndicatorDotWine} />
                 <Text style={styles.sectionTitle}>2º Bimestre (Atual)</Text>
               </View>
-              <Text style={styles.sectionTag}>Em Andamento</Text>
+              <Text style={styles.sectionTag}>2 Atividades</Text>
             </View>
+
+            {/* Atividade 12 - Lanchonete do IFRO (Stack Expo Router) */}
+            <AnimatedCard
+              style={styles.featuredCardBlue}
+              onPress={() => router.push('/Atividade12_Lanchonete')}
+            >
+              <View style={styles.specularLine} />
+              <View style={styles.featuredCardBody}>
+                <View style={styles.featuredBadgeRow}>
+                  <View style={styles.featuredBadgeBlue}>
+                    <Feather name="layers" size={13} color="#E0F2FE" />
+                    <Text style={styles.featuredBadgeBlueText}>ATIVIDADE 12 · NOVO</Text>
+                  </View>
+                  <Text style={[styles.featuredNumber, { color: '#7DD3FC' }]}>#2º-02</Text>
+                </View>
+
+                <Text style={styles.featuredTitle}>Lanchonete do IFRO</Text>
+                <Text style={styles.featuredDescription}>
+                  App com 3 telas em pilha (Stack - Expo Router): Home, Cardápio e Pedido confirmado. Utiliza router.push, router.back e router.dismissAll com cabeçalho azul-escuro customizado.
+                </Text>
+
+                <View style={styles.tagsRow}>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>Expo Router Stack</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>router.push</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>router.back</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>router.dismissAll</Text>
+                  </View>
+                </View>
+
+                <View style={styles.featuredButtonBlue}>
+                  <Text style={styles.featuredButtonText}>Abrir Lanchonete</Text>
+                  <Feather name="arrow-right" size={16} color="#FFFFFF" />
+                </View>
+              </View>
+            </AnimatedCard>
 
             {/* Atividade 11 - Adega Preferida (Hero Card) */}
             <AnimatedCard
@@ -331,7 +373,7 @@ export default function Hub() {
                 <View style={styles.featuredBadgeRow}>
                   <View style={styles.featuredBadge}>
                     <FontAwesome5 name="wine-bottle" size={12} color="#FEE2E2" />
-                    <Text style={styles.featuredBadgeText}>ATIVIDADE 11 · NOVO</Text>
+                    <Text style={styles.featuredBadgeText}>ATIVIDADE 11</Text>
                   </View>
                   <Text style={styles.featuredNumber}>#2º-01</Text>
                 </View>
@@ -373,7 +415,7 @@ export default function Hub() {
               <View>
                 <Text style={styles.placeholderTitle}>Próximas Atividades</Text>
                 <Text style={styles.placeholderSub}>
-                  Atividade 12 e seguintes serão adicionadas aqui
+                  Atividade 13 e seguintes serão adicionadas aqui
                 </Text>
               </View>
             </View>

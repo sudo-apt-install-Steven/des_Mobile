@@ -293,6 +293,66 @@ export const styles = StyleSheet.create({
     fontWeight: '800',
   },
 
+  // Featured Card Blue (Atividade 12 - Stack / Lanchonete)
+  featuredCardBlue: {
+    borderRadius: 22,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(56, 189, 248, 0.35)',
+    marginBottom: 18,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 8px 20px rgba(14, 165, 233, 0.25)',
+      },
+      default: {
+        shadowColor: '#0EA5E9',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.25,
+        shadowRadius: 16,
+        elevation: 8,
+      },
+    }),
+  },
+  featuredBadgeBlue: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#0369A1',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(125, 211, 252, 0.4)',
+  },
+  featuredBadgeBlueText: {
+    color: '#E0F2FE',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+  },
+  featuredButtonBlue: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0284C7',
+    paddingVertical: 12,
+    borderRadius: 14,
+    gap: 8,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 10px rgba(2, 132, 199, 0.4)',
+      },
+      default: {
+        shadowColor: '#0284C7',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
+  },
+
   // Placeholder Card (Próxima atividade)
   placeholderCard: {
     borderRadius: 18,

@@ -63,7 +63,11 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inicioOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'rgba(15, 3, 3, 0.45)',
   },
   inicioContent: {

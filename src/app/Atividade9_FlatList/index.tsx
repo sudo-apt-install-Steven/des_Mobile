@@ -48,7 +48,7 @@ export default function Atividade9FlatList() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" backgroundColor="#007AFF" />
+      <StatusBar style="light" />
 
       {/* Cabeçalho */}
       <View style={styles.header}>
