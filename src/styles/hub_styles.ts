@@ -353,6 +353,66 @@ export const styles = StyleSheet.create({
     }),
   },
 
+  // Featured Card Drawer (Atividade 13 - Drawer / Lanchonete)
+  featuredCardDrawer: {
+    borderRadius: 22,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(15, 23, 42, 0.75)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(16, 185, 129, 0.35)',
+    marginBottom: 18,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 8px 20px rgba(16, 185, 129, 0.25)',
+      },
+      default: {
+        shadowColor: '#10B981',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.25,
+        shadowRadius: 16,
+        elevation: 8,
+      },
+    }),
+  },
+  featuredBadgeDrawer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#047857',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(110, 231, 183, 0.4)',
+  },
+  featuredBadgeDrawerText: {
+    color: '#D1FAE5',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+  },
+  featuredButtonDrawer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#059669',
+    paddingVertical: 12,
+    borderRadius: 14,
+    gap: 8,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 10px rgba(5, 150, 105, 0.4)',
+      },
+      default: {
+        shadowColor: '#059669',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
+  },
+
   // Placeholder Card (Próxima atividade)
   placeholderCard: {
     borderRadius: 18,

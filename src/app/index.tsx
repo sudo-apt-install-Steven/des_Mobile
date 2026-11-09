@@ -238,7 +238,7 @@ export default function Hub() {
                   filtro === 'todos' ? styles.selectorCountTextActive : null,
                 ]}
               >
-                14
+                15
               </Text>
             </View>
           </TouchableOpacity>
@@ -271,7 +271,7 @@ export default function Hub() {
                   filtro === '2' ? styles.selectorCountTextActive : null,
                 ]}
               >
-                2
+                3
               </Text>
             </View>
           </TouchableOpacity>
@@ -318,8 +318,50 @@ export default function Hub() {
                 <View style={styles.sectionIndicatorDotWine} />
                 <Text style={styles.sectionTitle}>2º Bimestre (Atual)</Text>
               </View>
-              <Text style={styles.sectionTag}>2 Atividades</Text>
+              <Text style={styles.sectionTag}>3 Atividades</Text>
             </View>
+
+            {/* Atividade 13 - Lanchonete do IFRO (Drawer Expo Router) */}
+            <AnimatedCard
+              style={styles.featuredCardDrawer}
+              onPress={() => router.push('/Atividade13_Lanchonete_Drawer')}
+            >
+              <View style={styles.specularLine} />
+              <View style={styles.featuredCardBody}>
+                <View style={styles.featuredBadgeRow}>
+                  <View style={styles.featuredBadgeDrawer}>
+                    <Feather name="sidebar" size={13} color="#D1FAE5" />
+                    <Text style={styles.featuredBadgeDrawerText}>ATIVIDADE 13 · DRAWER</Text>
+                  </View>
+                  <Text style={[styles.featuredNumber, { color: '#6EE7B7' }]}>#2º-03</Text>
+                </View>
+
+                <Text style={styles.featuredTitle}>Lanchonete (Drawer)</Text>
+                <Text style={styles.featuredDescription}>
+                  App com 3 telas em pilha (Home → Cardápio → Pedido) integrado com menu lateral retrátil (Drawer Navigation). Utiliza router.push, router.back e router.dismissAll com cabeçalho azul-escuro.
+                </Text>
+
+                <View style={styles.tagsRow}>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>Drawer Navigation</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>router.push</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>router.back</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>router.dismissAll</Text>
+                  </View>
+                </View>
+
+                <View style={styles.featuredButtonDrawer}>
+                  <Text style={styles.featuredButtonText}>Abrir com Drawer</Text>
+                  <Feather name="arrow-right" size={16} color="#FFFFFF" />
+                </View>
+              </View>
+            </AnimatedCard>
 
             {/* Atividade 12 - Lanchonete do IFRO (Stack Expo Router) */}
             <AnimatedCard
@@ -331,14 +373,14 @@ export default function Hub() {
                 <View style={styles.featuredBadgeRow}>
                   <View style={styles.featuredBadgeBlue}>
                     <Feather name="layers" size={13} color="#E0F2FE" />
-                    <Text style={styles.featuredBadgeBlueText}>ATIVIDADE 12 · NOVO</Text>
+                    <Text style={styles.featuredBadgeBlueText}>ATIVIDADE 12 · STACK</Text>
                   </View>
                   <Text style={[styles.featuredNumber, { color: '#7DD3FC' }]}>#2º-02</Text>
                 </View>
 
-                <Text style={styles.featuredTitle}>Lanchonete do IFRO</Text>
+                <Text style={styles.featuredTitle}>Lanchonete (Stack)</Text>
                 <Text style={styles.featuredDescription}>
-                  App com 3 telas em pilha (Stack - Expo Router): Home, Cardápio e Pedido confirmado. Utiliza router.push, router.back e router.dismissAll com cabeçalho azul-escuro customizado.
+                  App com 3 telas em pilha (Home → Cardápio → Pedido) utilizando Stack do Expo Router. Suporta navegação linear completa com router.push, router.back e router.dismissAll.
                 </Text>
 
                 <View style={styles.tagsRow}>
@@ -357,7 +399,7 @@ export default function Hub() {
                 </View>
 
                 <View style={styles.featuredButtonBlue}>
-                  <Text style={styles.featuredButtonText}>Abrir Lanchonete</Text>
+                  <Text style={styles.featuredButtonText}>Abrir com Stack</Text>
                   <Feather name="arrow-right" size={16} color="#FFFFFF" />
                 </View>
               </View>
