@@ -39,3 +39,9 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# local mapping, agent artifacts and interactive demos (not tracked in repo)
+.local_map/
+.superpowers/
+demos/
+*.map.md

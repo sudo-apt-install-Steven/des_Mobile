@@ -457,7 +457,7 @@ export default function Hub() {
               <View>
                 <Text style={styles.placeholderTitle}>Próximas Atividades</Text>
                 <Text style={styles.placeholderSub}>
-                  Atividade 13 e seguintes serão adicionadas aqui
+                  Atividade 14 e seguintes serão adicionadas aqui
                 </Text>
               </View>
             </View>
