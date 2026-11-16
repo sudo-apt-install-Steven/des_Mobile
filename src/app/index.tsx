@@ -318,8 +318,44 @@ export default function Hub() {
                 <View style={styles.sectionIndicatorDotWine} />
                 <Text style={styles.sectionTitle}>2º Bimestre (Atual)</Text>
               </View>
-              <Text style={styles.sectionTag}>3 Atividades</Text>
+              <Text style={styles.sectionTag}>4 Atividades</Text>
             </View>
+
+            {/* Atividade Axios - Proprietários (API) */}
+            <AnimatedCard
+              style={styles.featuredCardDrawer}
+              onPress={() => router.push('/Atividade14_Axios')}
+            >
+              <View style={styles.specularLine} />
+              <View style={styles.featuredCardBody}>
+                <View style={styles.featuredBadgeRow}>
+                  <View style={styles.featuredBadgeDrawer}>
+                    <Feather name="cloud" size={13} color="#D1FAE5" />
+                    <Text style={styles.featuredBadgeDrawerText}>ATIVIDADE AXIOS · API</Text>
+                  </View>
+                  <Text style={[styles.featuredNumber, { color: '#6EE7B7' }]}>#2º-04</Text>
+                </View>
+                <Text style={styles.featuredTitle}>Atividade Axios (2º Bimestre)</Text>
+                <Text style={styles.featuredDescription}>
+                  Consumo da API de proprietários com Axios (GET), exibindo nome, CPF, telefone e e-mail em uma FlatList com estados de carregamento e erro.
+                </Text>
+                <View style={styles.tagsRow}>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>Axios</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>FlatList</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>useEffect</Text>
+                  </View>
+                </View>
+                <View style={styles.featuredButtonDrawer}>
+                  <Text style={styles.featuredButtonText}>Abrir Atividade</Text>
+                  <Feather name="arrow-right" size={16} color="#FFFFFF" />
+                </View>
+              </View>
+            </AnimatedCard>
 
             {/* Atividade 13 - Lanchonete do IFRO (Drawer Expo Router) */}
             <AnimatedCard
@@ -457,7 +493,7 @@ export default function Hub() {
               <View>
                 <Text style={styles.placeholderTitle}>Próximas Atividades</Text>
                 <Text style={styles.placeholderSub}>
-                  Atividade 14 e seguintes serão adicionadas aqui
+                  Atividade 15 e seguintes serão adicionadas aqui
                 </Text>
               </View>
             </View>
