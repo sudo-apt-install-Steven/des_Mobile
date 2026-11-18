@@ -1,0 +1,671 @@
+import { StyleSheet, Platform } from 'react-native';
+
+export const PIZZARIA_COLORS = {
+  bgDeep: '#0B1120',
+  bgSurface: '#0F172A',
+  bgCard: '#111827',
+  bgElevated: '#1E293B',
+  fireOrange: '#FF6B35',
+  fireRed: '#E74C3C',
+  fireAmber: '#FF8C42',
+  gold: '#FACC15',
+  amber: '#F59E0B',
+  emerald: '#10B981',
+  cyan: '#06B6D4',
+  blue: '#3B82F6',
+  violet: '#8B5CF6',
+  red: '#EF4444',
+  textPrimary: '#F8FAFC',
+  textSecondary: '#CBD5E1',
+  textMuted: '#94A3B8',
+  glassBg: 'rgba(255, 255, 255, 0.06)',
+  glassBgStrong: 'rgba(255, 255, 255, 0.1)',
+  glassBorder: 'rgba(255, 255, 255, 0.12)',
+  goldBorder: 'rgba(250, 204, 21, 0.35)',
+  fireBorder: 'rgba(255, 107, 53, 0.42)',
+};
+
+const cardShadow = Platform.select({
+  web: {
+    boxShadow: '0px 10px 24px rgba(0, 0, 0, 0.32)',
+  },
+  default: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.32,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+});
+
+const fireShadow = Platform.select({
+  web: {
+    boxShadow: '0px 8px 20px rgba(255, 107, 53, 0.35)',
+  },
+  default: {
+    shadowColor: '#FF6B35',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+});
+
+const goldShadow = Platform.select({
+  web: {
+    boxShadow: '0px 6px 16px rgba(250, 204, 21, 0.25)',
+  },
+  default: {
+    shadowColor: '#FACC15',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+});
+
+export const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: PIZZARIA_COLORS.bgDeep,
+  },
+  screenRoot: {
+    flex: 1,
+    backgroundColor: PIZZARIA_COLORS.bgDeep,
+  },
+  ambientOrbTop: {
+    position: 'absolute',
+    top: -90,
+    right: -60,
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    backgroundColor: 'rgba(255, 107, 53, 0.14)',
+  },
+  ambientOrbBottom: {
+    position: 'absolute',
+    bottom: 60,
+    left: -70,
+    width: 240,
+    height: 240,
+    borderRadius: 120,
+    backgroundColor: 'rgba(250, 204, 21, 0.08)',
+  },
+  scrollContent: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 110,
+  },
+  maxWidthWrap: {
+    width: '100%',
+    maxWidth: 960,
+    alignSelf: 'center',
+  },
+
+  // Top Header
+  topHeader: {
+    backgroundColor: '#1A0E0A',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 107, 53, 0.3)',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  topHeaderInner: {
+    width: '100%',
+    maxWidth: 960,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  hubBackBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.16)',
+  },
+  hubBackText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
+  },
+  brandIconBox: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    backgroundColor: PIZZARIA_COLORS.fireOrange,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...fireShadow,
+  },
+  brandTitle: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '900',
+    letterSpacing: -0.3,
+  },
+  brandSub: {
+    color: '#FDBA74',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  coinsPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(250, 204, 21, 0.14)',
+    borderWidth: 1,
+    borderColor: PIZZARIA_COLORS.goldBorder,
+  },
+  coinsPillText: {
+    color: PIZZARIA_COLORS.gold,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+
+  // Hero Banner
+  heroCard: {
+    borderRadius: 22,
+    overflow: 'hidden',
+    backgroundColor: '#2A120C',
+    borderWidth: 1.5,
+    borderColor: PIZZARIA_COLORS.fireBorder,
+    marginBottom: 18,
+    ...fireShadow,
+  },
+  heroFireStripe: {
+    height: 4,
+    backgroundColor: PIZZARIA_COLORS.fireOrange,
+    width: '100%',
+  },
+  heroGlowAccent: {
+    position: 'absolute',
+    top: -40,
+    right: -30,
+    width: 170,
+    height: 170,
+    borderRadius: 85,
+    backgroundColor: 'rgba(231, 76, 60, 0.28)',
+  },
+  heroBody: {
+    padding: 18,
+  },
+  heroBadge: {
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: 'rgba(250, 204, 21, 0.16)',
+    borderWidth: 1,
+    borderColor: PIZZARIA_COLORS.goldBorder,
+    marginBottom: 10,
+  },
+  heroBadgeText: {
+    color: PIZZARIA_COLORS.gold,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+  },
+  heroTitle: {
+    color: '#FFFFFF',
+    fontSize: 24,
+    fontWeight: '900',
+    letterSpacing: -0.5,
+    marginBottom: 6,
+  },
+  heroSubtitle: {
+    color: '#FED7AA',
+    fontSize: 13,
+    lineHeight: 19,
+    marginBottom: 16,
+  },
+  heroActionsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  primaryCtaBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: PIZZARIA_COLORS.fireOrange,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 14,
+    ...fireShadow,
+  },
+  primaryCtaText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  goldCtaBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: PIZZARIA_COLORS.gold,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 14,
+    ...goldShadow,
+  },
+  goldCtaText: {
+    color: '#111827',
+    fontSize: 14,
+    fontWeight: '900',
+  },
+  ghostBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: PIZZARIA_COLORS.glassBgStrong,
+    borderWidth: 1,
+    borderColor: PIZZARIA_COLORS.glassBorder,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    borderRadius: 14,
+  },
+  ghostBtnText: {
+    color: '#F8FAFC',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+
+  // Section Titles
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  sectionDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: PIZZARIA_COLORS.fireOrange,
+  },
+  sectionTitle: {
+    color: PIZZARIA_COLORS.textPrimary,
+    fontSize: 17,
+    fontWeight: '800',
+    letterSpacing: -0.2,
+  },
+  sectionMeta: {
+    color: PIZZARIA_COLORS.textMuted,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+
+  // Glass Cards
+  glassCard: {
+    backgroundColor: PIZZARIA_COLORS.glassBg,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: PIZZARIA_COLORS.glassBorder,
+    padding: 14,
+    marginBottom: 12,
+    ...cardShadow,
+  },
+  glassCardSelected: {
+    backgroundColor: 'rgba(255, 107, 53, 0.14)',
+    borderColor: PIZZARIA_COLORS.fireOrange,
+    borderWidth: 1.5,
+  },
+  glassCardGold: {
+    backgroundColor: 'rgba(250, 204, 21, 0.08)',
+    borderColor: PIZZARIA_COLORS.goldBorder,
+  },
+
+  // Horizontal Scrollers & Grid Items
+  horizontalList: {
+    gap: 12,
+    paddingBottom: 6,
+  },
+  couponCard: {
+    width: 210,
+    backgroundColor: 'rgba(250, 204, 21, 0.09)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: PIZZARIA_COLORS.goldBorder,
+    padding: 14,
+  },
+  couponCodeBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: PIZZARIA_COLORS.gold,
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  couponCodeText: {
+    color: '#111827',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0.6,
+  },
+  couponDiscountText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+    marginBottom: 4,
+  },
+  couponMetaText: {
+    color: '#FDE68A',
+    fontSize: 11,
+  },
+
+  comboCard: {
+    width: 240,
+    backgroundColor: PIZZARIA_COLORS.bgCard,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: PIZZARIA_COLORS.fireBorder,
+    padding: 14,
+    ...cardShadow,
+  },
+  menuItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  menuThumb: {
+    width: 64,
+    height: 64,
+    borderRadius: 14,
+    backgroundColor: PIZZARIA_COLORS.bgElevated,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: PIZZARIA_COLORS.glassBorder,
+  },
+  menuThumbImg: {
+    width: '100%',
+    height: '100%',
+  },
+  itemTitle: {
+    color: PIZZARIA_COLORS.textPrimary,
+    fontSize: 15,
+    fontWeight: '800',
+    marginBottom: 3,
+  },
+  itemDesc: {
+    color: PIZZARIA_COLORS.textMuted,
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  priceText: {
+    color: PIZZARIA_COLORS.gold,
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  tagPill: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  tagPillText: {
+    color: PIZZARIA_COLORS.textSecondary,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+
+  // Reviews
+  reviewHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  likeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(231, 76, 60, 0.16)',
+    borderWidth: 1,
+    borderColor: 'rgba(231, 76, 60, 0.4)',
+  },
+  likeBtnText: {
+    color: '#FCA5A5',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  // Builder Stepper
+  stepperRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  stepChip: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+    borderRadius: 12,
+    backgroundColor: PIZZARIA_COLORS.glassBg,
+    borderWidth: 1,
+    borderColor: PIZZARIA_COLORS.glassBorder,
+    alignItems: 'center',
+  },
+  stepChipActive: {
+    backgroundColor: 'rgba(255, 107, 53, 0.22)',
+    borderColor: PIZZARIA_COLORS.fireOrange,
+  },
+  stepChipDone: {
+    backgroundColor: 'rgba(16, 185, 129, 0.15)',
+    borderColor: 'rgba(16, 185, 129, 0.45)',
+  },
+  stepChipText: {
+    color: PIZZARIA_COLORS.textMuted,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  stepChipTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+  },
+
+  // Inputs & Forms
+  inputLabel: {
+    color: PIZZARIA_COLORS.textSecondary,
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  input: {
+    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.16)',
+    borderRadius: 12,
+    paddingHorizontal: 13,
+    paddingVertical: 11,
+    color: '#FFFFFF',
+    fontSize: 14,
+    marginBottom: 12,
+  },
+  rowGap: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+  },
+
+  // Badges HTTP / Status
+  methodBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    minWidth: 58,
+    alignItems: 'center',
+  },
+  methodText: {
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 0.4,
+  },
+  statusPill: {
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 999,
+  },
+  statusPillText: {
+    fontSize: 11,
+    fontWeight: '800',
+  },
+
+  // Code / JSON output box
+  jsonBox: {
+    backgroundColor: '#020617',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    padding: 12,
+    marginTop: 10,
+  },
+  jsonText: {
+    color: '#A7F3D0',
+    fontSize: 11.5,
+    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }),
+    lineHeight: 17,
+  },
+
+  // States
+  centerBox: {
+    paddingVertical: 32,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorCard: {
+    backgroundColor: 'rgba(239, 68, 68, 0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.35)',
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  errorText: {
+    color: '#FCA5A5',
+    fontSize: 13,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  successBanner: {
+    backgroundColor: 'rgba(16, 185, 129, 0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.4)',
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 12,
+  },
+  successText: {
+    color: '#6EE7B7',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  // Bottom Navigation Bar
+  bottomBarWrap: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 12,
+    paddingBottom: Platform.OS === 'ios' ? 14 : 10,
+    paddingTop: 6,
+    backgroundColor: 'rgba(11, 17, 32, 0.92)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  bottomBar: {
+    width: '100%',
+    maxWidth: 720,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    backgroundColor: '#111827',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    paddingVertical: 6,
+    paddingHorizontal: 6,
+    ...cardShadow,
+  },
+  navItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    borderRadius: 14,
+    gap: 3,
+  },
+  navItemActive: {
+    backgroundColor: 'rgba(255, 107, 53, 0.18)',
+  },
+  navLabel: {
+    color: PIZZARIA_COLORS.textMuted,
+    fontSize: 10.5,
+    fontWeight: '700',
+  },
+  navLabelActive: {
+    color: PIZZARIA_COLORS.gold,
+    fontWeight: '800',
+  },
+  navBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 14,
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: PIZZARIA_COLORS.fireRed,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  navBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 9,
+    fontWeight: '900',
+  },
+});

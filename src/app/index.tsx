@@ -238,7 +238,7 @@ export default function Hub() {
                   filtro === 'todos' ? styles.selectorCountTextActive : null,
                 ]}
               >
-                15
+                17
               </Text>
             </View>
           </TouchableOpacity>
@@ -271,7 +271,7 @@ export default function Hub() {
                   filtro === '2' ? styles.selectorCountTextActive : null,
                 ]}
               >
-                3
+                5
               </Text>
             </View>
           </TouchableOpacity>
@@ -318,8 +318,47 @@ export default function Hub() {
                 <View style={styles.sectionIndicatorDotWine} />
                 <Text style={styles.sectionTitle}>2º Bimestre (Atual)</Text>
               </View>
-              <Text style={styles.sectionTag}>4 Atividades</Text>
+              <Text style={styles.sectionTag}>5 Atividades</Text>
             </View>
+
+            {/* Atividade 15 - PizzariaTop (Axios + App Completo) */}
+            <AnimatedCard
+              style={styles.featuredCardFire}
+              onPress={() => router.push('/Atividade15_PizzariaTop')}
+            >
+              <View style={styles.specularLine} />
+              <View style={styles.featuredCardBody}>
+                <View style={styles.featuredBadgeRow}>
+                  <View style={styles.featuredBadgeFire}>
+                    <FontAwesome5 name="pizza-slice" size={12} color="#FACC15" />
+                    <Text style={styles.featuredBadgeFireText}>ATIVIDADE 15 · AXIOS + APP</Text>
+                  </View>
+                  <Text style={[styles.featuredNumber, { color: '#FDBA74' }]}>#2º-05</Text>
+                </View>
+                <Text style={styles.featuredTitle}>Atividade PizzariaTop (Axios + App)</Text>
+                <Text style={styles.featuredDescription}>
+                  App completo conectado à API da PizzariaTop com Axios: vitrine de cupons, combos, sabores e avaliações, montador de pizza passo a passo, carrinho com CEP/tracking, conta/fidelidade e testador interativo de rotas GET.
+                </Text>
+                <View style={styles.tagsRow}>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>Axios</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>Montar Pizza</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>Pedidos & CEP</Text>
+                  </View>
+                  <View style={styles.tagChip}>
+                    <Text style={styles.tagChipText}>API Map Tester</Text>
+                  </View>
+                </View>
+                <View style={styles.featuredButtonFire}>
+                  <Text style={styles.featuredButtonText}>Abrir PizzariaTop</Text>
+                  <Feather name="arrow-right" size={16} color="#FFFFFF" />
+                </View>
+              </View>
+            </AnimatedCard>
 
             {/* Atividade Axios - Proprietários (API) */}
             <AnimatedCard
@@ -493,7 +532,7 @@ export default function Hub() {
               <View>
                 <Text style={styles.placeholderTitle}>Próximas Atividades</Text>
                 <Text style={styles.placeholderSub}>
-                  Atividade 15 e seguintes serão adicionadas aqui
+                  Atividade 16 e seguintes serão adicionadas aqui
                 </Text>
               </View>
             </View>

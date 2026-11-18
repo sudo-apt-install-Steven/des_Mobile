@@ -413,6 +413,66 @@ export const styles = StyleSheet.create({
     }),
   },
 
+  // Featured Card Fire (Atividade 15 - PizzariaTop Axios + App)
+  featuredCardFire: {
+    borderRadius: 22,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(42, 18, 12, 0.85)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 107, 53, 0.48)',
+    marginBottom: 18,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 8px 22px rgba(255, 107, 53, 0.28)',
+      },
+      default: {
+        shadowColor: '#FF6B35',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.28,
+        shadowRadius: 16,
+        elevation: 8,
+      },
+    }),
+  },
+  featuredBadgeFire: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#C2410C',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(250, 204, 21, 0.45)',
+  },
+  featuredBadgeFireText: {
+    color: '#FEF3C7',
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+  },
+  featuredButtonFire: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FF6B35',
+    paddingVertical: 12,
+    borderRadius: 14,
+    gap: 8,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 4px 12px rgba(255, 107, 53, 0.42)',
+      },
+      default: {
+        shadowColor: '#FF6B35',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.42,
+        shadowRadius: 8,
+        elevation: 4,
+      },
+    }),
+  },
+
   // Placeholder Card (Próxima atividade)
   placeholderCard: {
     borderRadius: 18,
