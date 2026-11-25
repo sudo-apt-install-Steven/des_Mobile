@@ -321,7 +321,7 @@ export default function Hub() {
               <Text style={styles.sectionTag}>5 Atividades</Text>
             </View>
 
-            {/* Atividade 15 - PizzariaTop (Axios + App Completo) */}
+            {/* Atividade 15 - PizzariaTop (CRUD REST com Axios + Expo Router) */}
             <AnimatedCard
               style={styles.featuredCardFire}
               onPress={() => router.push('/Atividade15_PizzariaTop')}
@@ -331,30 +331,30 @@ export default function Hub() {
                 <View style={styles.featuredBadgeRow}>
                   <View style={styles.featuredBadgeFire}>
                     <FontAwesome5 name="pizza-slice" size={12} color="#FACC15" />
-                    <Text style={styles.featuredBadgeFireText}>ATIVIDADE 15 · AXIOS + APP</Text>
+                    <Text style={styles.featuredBadgeFireText}>ATIVIDADE PRÁTICA · CRUD AXIOS</Text>
                   </View>
                   <Text style={[styles.featuredNumber, { color: '#FDBA74' }]}>#2º-05</Text>
                 </View>
-                <Text style={styles.featuredTitle}>Atividade PizzariaTop (Axios + App)</Text>
+                <Text style={styles.featuredTitle}>Atividade Prática CRUD · PizzariaTop (Axios)</Text>
                 <Text style={styles.featuredDescription}>
-                  App completo conectado à API da PizzariaTop com Axios: vitrine de cupons, combos, sabores e avaliações, montador de pizza passo a passo, carrinho com CEP/tracking, conta/fidelidade e testador interativo de rotas GET.
+                  App redesenhado no tema artesanal PizzariaTop com Expo Router e Axios: 2 telas CRUD completas (/api/sabores e /api/ingredientes) com GET, POST, PUT e DELETE, autenticação Admin Bearer, feedback visual e vitrine ao vivo.
                 </Text>
                 <View style={styles.tagsRow}>
                   <View style={styles.tagChip}>
-                    <Text style={styles.tagChipText}>Axios</Text>
+                    <Text style={styles.tagChipText}>GET · POST · PUT · DELETE</Text>
                   </View>
                   <View style={styles.tagChip}>
-                    <Text style={styles.tagChipText}>Montar Pizza</Text>
+                    <Text style={styles.tagChipText}>/api/sabores</Text>
                   </View>
                   <View style={styles.tagChip}>
-                    <Text style={styles.tagChipText}>Pedidos & CEP</Text>
+                    <Text style={styles.tagChipText}>/api/ingredientes</Text>
                   </View>
                   <View style={styles.tagChip}>
-                    <Text style={styles.tagChipText}>API Map Tester</Text>
+                    <Text style={styles.tagChipText}>Expo Router + Axios</Text>
                   </View>
                 </View>
                 <View style={styles.featuredButtonFire}>
-                  <Text style={styles.featuredButtonText}>Abrir PizzariaTop</Text>
+                  <Text style={styles.featuredButtonText}>Abrir PizzariaTop CRUD</Text>
                   <Feather name="arrow-right" size={16} color="#FFFFFF" />
                 </View>
               </View>

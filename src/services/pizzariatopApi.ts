@@ -85,15 +85,54 @@ export interface Tamanho {
   ativo?: number | boolean;
 }
 
+export type SaborCategoria = 'tradicional' | 'especial' | 'premium' | 'doce';
+
 export interface Sabor {
   id?: number;
   id_sabor?: number;
   nome_sabor: string;
   descricao?: string | null;
-  categoria_sabor?: string | null;
+  categoria_sabor?: SaborCategoria | string | null;
   preco_adicional?: number | string;
   imagem_url?: string | null;
   disponivel?: number | boolean;
+  destaque?: number | boolean;
+}
+
+export interface SaborPayload {
+  nome_sabor: string;
+  descricao?: string;
+  categoria_sabor?: SaborCategoria;
+  preco_adicional?: number;
+  imagem_url?: string;
+  disponivel?: boolean | number;
+  destaque?: boolean | number;
+}
+
+export type IngredienteTipo =
+  | 'queijos'
+  | 'carnes'
+  | 'vegetais'
+  | 'doces'
+  | 'frutas'
+  | 'outros';
+
+export interface Ingrediente {
+  id?: number;
+  id_ingrediente: number;
+  nome_ingrediente: string;
+  tipo_ingrediente: IngredienteTipo | string;
+  preco_adicional: number | string;
+  disponivel?: number | boolean;
+  imagem_url?: string | null;
+}
+
+export interface IngredientePayload {
+  nome_ingrediente: string;
+  tipo_ingrediente: IngredienteTipo;
+  preco_adicional?: number;
+  disponivel?: boolean | number;
+  imagem_url?: string;
 }
 
 export interface Massa {
@@ -315,6 +354,7 @@ export function extractList<T>(payload: unknown): T[] {
       obj.items ??
       obj.results ??
       obj.sabores ??
+      obj.ingredientes ??
       obj.produtos ??
       obj.tamanhos ??
       obj.massas ??
@@ -333,10 +373,42 @@ export function extractList<T>(payload: unknown): T[] {
 export function extractErrorMessage(err: unknown, fallback = 'Erro ao comunicar com a API PizzariaTop.'): string {
   if (axios.isAxiosError(err)) {
     const axiosErr = err as AxiosError<{ message?: string; error?: string }>;
+    const status = axiosErr.response?.status;
     const serverMsg = axiosErr.response?.data?.message || axiosErr.response?.data?.error;
+
+    if (axiosErr.code === 'ECONNABORTED') {
+      return 'Tempo limite esgotado ao conectar com a API PizzariaTop. Tente novamente.';
+    }
+
+    if (axiosErr.code === 'ERR_NETWORK' || !axiosErr.response) {
+      return 'Sem conexão com a API PizzariaTop. Verifique sua internet e tente novamente.';
+    }
+
+    if (status === 401) {
+      return 'Sessão necessária: faça login como Admin para continuar.';
+    }
+
+    if (status === 403) {
+      return 'Acesso restrito a administradores.';
+    }
+
+    if (status === 404) {
+      return serverMsg || 'Registro não encontrado na API (HTTP 404).';
+    }
+
+    if (status === 400 || status === 422) {
+      return serverMsg || `Dados inválidos enviados para a API (HTTP ${status}).`;
+    }
+
+    if (status && status >= 500) {
+      return serverMsg
+        ? `${serverMsg} (HTTP ${status})`
+        : `Erro interno no servidor da PizzariaTop (HTTP ${status}). Tente novamente em instantes.`;
+    }
+
     if (serverMsg) return serverMsg;
-    if (axiosErr.response?.status) {
-      return `${fallback} (HTTP ${axiosErr.response.status})`;
+    if (status) {
+      return `${fallback} (HTTP ${status})`;
     }
     if (axiosErr.message) return axiosErr.message;
   } else if (err instanceof Error && err.message) {
@@ -411,6 +483,51 @@ export async function getSabores(disponivelOnly = false): Promise<Sabor[]> {
     params: disponivelOnly ? { disponivel: 'true' } : undefined,
   });
   return extractList<Sabor>(res.data);
+}
+
+export async function getSaborById(id: number): Promise<Sabor> {
+  const res = await pizzariatopApi.get<{ data?: Sabor } & Sabor>(`/sabores/${id}`);
+  return (res.data?.data ?? res.data) as Sabor;
+}
+
+export async function createSabor(payload: SaborPayload) {
+  const res = await pizzariatopApi.post('/sabores', payload);
+  return res.data;
+}
+
+export async function updateSabor(id: number, payload: Partial<SaborPayload>) {
+  const res = await pizzariatopApi.put(`/sabores/${id}`, payload);
+  return res.data;
+}
+
+export async function deleteSabor(id: number) {
+  const res = await pizzariatopApi.delete(`/sabores/${id}`);
+  return res.data;
+}
+
+export async function getIngredientes(): Promise<Ingrediente[]> {
+  const res = await pizzariatopApi.get('/ingredientes');
+  return extractList<Ingrediente>(res.data);
+}
+
+export async function getIngredienteById(id: number): Promise<Ingrediente> {
+  const res = await pizzariatopApi.get<{ data?: Ingrediente } & Ingrediente>(`/ingredientes/${id}`);
+  return (res.data?.data ?? res.data) as Ingrediente;
+}
+
+export async function createIngrediente(payload: IngredientePayload) {
+  const res = await pizzariatopApi.post('/ingredientes', payload);
+  return res.data;
+}
+
+export async function updateIngrediente(id: number, payload: Partial<IngredientePayload>) {
+  const res = await pizzariatopApi.put(`/ingredientes/${id}`, payload);
+  return res.data;
+}
+
+export async function deleteIngrediente(id: number) {
+  const res = await pizzariatopApi.delete(`/ingredientes/${id}`);
+  return res.data;
 }
 
 export async function getMassas(): Promise<Massa[]> {

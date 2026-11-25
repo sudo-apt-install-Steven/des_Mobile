@@ -2,9 +2,12 @@
 
 - **Base URL (Produção)**: `https://apipizzariatop.dev.vilhena.ifro.edu.br/api`
 - **Uploads / Imagens estáticas**: `https://apipizzariatop.dev.vilhena.ifro.edu.br/uploads/<filename>` (fora do prefixo `/api`)
-- **Autenticação**:
+- **Documentação Postman**: https://documenter.getpostman.com/view/45667002/2sBXqCPPVf
+- **Autenticação (Produção)**:
   - Cookie HTTP-only `user_session` (24h TTL em `user_sessions`)
-  - Suporte opcional a header `Authorization: Bearer <token>` (usando `token` retornado em `POST /api/auth/login` para clientes mobile/Expo Go)
+  - Header `Authorization: Bearer <token>` (usando `data.token` retornado em `POST /api/auth/login`) — **suportado e validado em produção** para clientes mobile/Expo Go em todas as rotas `withAuth` e `withAdminAuth`
+  - **Proteção `withAdminAuth` em produção**: exige usuário autenticado com perfil administrativo (`admin` / `gerente` / `funcionario`) em `PUT/DELETE /sabores/[id]` e em `POST/PUT/DELETE` de `/ingredientes`, `/bordas`, `/massas`, `/produtos`, `/tamanhos` e `/cupons` (retorna `401 NO_SESSION` sem token ou `403` sem permissão)
+  - **Proteção `withAuth` em produção**: exige sessão ativa (`401 NO_SESSION`) em `/usuarios`, `/enderecos`, `/pedidos` e rotas de perfil
   - Header opcional `x-device-fingerprint` em `POST /api/auth/login` (usado junto ao IP no rate limit de 5 tentativas)
 
 ---
@@ -55,18 +58,18 @@
 | `POST` | `/produtos` | `withAdminAuth` | Body: `{ action:'fix-data' }` ou `{ nome_produto, descricao?, preco_base, imagem_url?, disponivel?, id_categoria? }` | Cria produto ou normaliza vitrine |
 | `GET` / `PUT` / `PATCH` / `DELETE` | `/produtos/[id]` | Pública (sem auth na rota) | Param: `id` | CRUD individual de produto |
 | `GET` | `/sabores` | Pública | Query opcional `?disponivel=true` | Lista `sabores_pizza` |
-| `POST` | `/sabores` | Pública (sem auth na rota) | Body: `{ nome_sabor, descricao?, categoria_sabor?, preco_adicional?, imagem_url? }` | Cadastra sabor de pizza |
-| `GET` / `PUT` / `PATCH` / `DELETE` | `/sabores/[id]` | Pública (sem auth na rota) | Param: `id` | CRUD individual de sabor |
+| `POST` | `/sabores` | Pública | Body: `{ nome_sabor, descricao?, categoria_sabor?, preco_adicional?, imagem_url? }` | Cadastra sabor de pizza (`categoria_sabor`: `'tradicional' \| 'especial' \| 'premium' \| 'doce'`) |
+| `GET` / `PUT` / `PATCH` / `DELETE` | `/sabores/[id]` | `GET` pública · `PUT`/`DELETE` `withAdminAuth` | Param: `id` | CRUD individual de sabor (update parcial e hard delete) |
 | `GET` | `/tamanhos` | Pública | Query: `?all=true` (inclui inativos) | Lista tamanhos (`nome_tamanho`, `numero_fatias`, `numero_sabores`, `preco_base`, `diametro_cm`, `imagem_url`) |
-| `POST` | `/tamanhos` | `authenticate` (`admin\|gerente`) | Body: `{ nome_tamanho, numero_fatias, numero_sabores, preco_base, diametro_cm, imagem_url, descricao? }` | Cria tamanho |
-| `PUT` / `DELETE` | `/tamanhos/[id]` | `authenticate` (`admin\|gerente`) | Param: `id` | Atualiza ou desativa/remove tamanho |
+| `POST` | `/tamanhos` | `withAdminAuth` | Body: `{ nome_tamanho, numero_fatias, numero_sabores, preco_base, diametro_cm, imagem_url, descricao? }` | Cria tamanho |
+| `PUT` / `DELETE` | `/tamanhos/[id]` | `withAdminAuth` | Param: `id` | Atualiza ou desativa/remove tamanho |
 | `GET` | `/massas` | Pública | — | Lista massas disponíveis |
 | `POST` / `PUT` / `DELETE` | `/massas` e `/massas/[id]` | `withAdminAuth` | Body: `{ nome_massa, descricao?, preco_adicional?, disponivel? }` | CRUD de massas |
 | `GET` | `/bordas` | Pública | — | Lista bordas disponíveis |
 | `POST` / `PUT` / `DELETE` | `/bordas` e `/bordas/[id]` | `withAdminAuth` | Body: `{ nome_borda, descricao?, preco_adicional?, disponivel? }` | CRUD de bordas |
-| `GET` | `/ingredientes` | Pública | — | Lista ingredientes |
+| `GET` | `/ingredientes` | Pública | — | Lista ingredientes (`tipo_ingrediente`: `'queijos' \| 'carnes' \| 'vegetais' \| 'doces' \| 'frutas' \| 'outros'`) |
 | `POST` | `/ingredientes` | `withAdminAuth` | Body: `{ nome_ingrediente, tipo_ingrediente, preco_adicional?, disponivel?, imagem_url? }` | Cria ingrediente |
-| `GET` / `PUT` / `DELETE` | `/ingredientes/[id]` | Pública (sem auth na rota) | Param: `id` | CRUD individual de ingrediente (`DELETE` faz fallback para `disponivel=0`) |
+| `GET` / `PUT` / `DELETE` | `/ingredientes/[id]` | `GET` pública · `PUT`/`DELETE` `withAdminAuth` | Param: `id` | CRUD individual de ingrediente (`DELETE` faz fallback para `disponivel=0` se houver FK) |
 | `GET` | `/combos` | Pública | — | Lista combos ativos (`WHERE ativo = 1`) |
 | `GET` | `/search` | Pública | Query: `?q=` | Busca mockada (2 pizzas de exemplo) |
 
