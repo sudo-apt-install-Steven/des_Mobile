@@ -380,7 +380,7 @@ export default function IngredientesScreen() {
                   activeOpacity={0.85}
                 >
                   <Feather name="plus" size={16} color="#FFF7ED" />
-                  <Text style={styles.primaryCtaText}>+ Novo Ingrediente</Text>
+                  <Text style={styles.primaryCtaText}>Novo Ingrediente</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -524,7 +524,7 @@ export default function IngredientesScreen() {
               </Text>
               <Text style={styles.emptyStateDesc}>
                 {ingredientes.length === 0
-                  ? 'Clique em "+ Novo Ingrediente" para adicionar o primeiro item na API.'
+                  ? 'Clique em "Novo Ingrediente" para adicionar o primeiro item na API.'
                   : 'Tente ajustar o termo de busca ou selecionar outro filtro de tipo.'}
               </Text>
               {(searchQuery.length > 0 || selectedTipo !== 'todos') && (

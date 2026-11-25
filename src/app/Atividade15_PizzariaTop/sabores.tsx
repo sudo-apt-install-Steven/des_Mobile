@@ -332,7 +332,7 @@ export default function SaboresCrudScreen() {
               activeOpacity={0.85}
             >
               <Feather name="plus" size={16} color="#FFF7ED" />
-              <Text style={styles.primaryCtaText}>+ Novo Sabor</Text>
+              <Text style={styles.primaryCtaText}>Novo Sabor</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -605,7 +605,7 @@ export default function SaboresCrudScreen() {
           <Text style={styles.emptyStateDesc}>
             {searchQuery || selectedCategoria !== 'todas'
               ? 'Ajuste a busca ou o filtro de categoria para visualizar outros sabores.'
-              : 'Cadastre o primeiro sabor tocando em "+ Novo Sabor".'}
+              : 'Cadastre o primeiro sabor tocando em "Novo Sabor".'}
           </Text>
         </View>
       </View>
