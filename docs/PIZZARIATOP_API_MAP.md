@@ -164,3 +164,9 @@
   - `GET /db-test`, `GET /debug`, `GET /tables`, `GET /database-structure`, `GET /produtos-structure`, `GET /sabores-structure`
   - `GET /setup-features`, `GET` / `POST /backup`, `GET` / `POST /migrations`, `GET` / `POST /optimizer`
   - `POST /debug-login`, `POST /test-senha`
+
+---
+
+## 11. Registro de Evolução do App Mobile (`des_Mobile`)
+- **v1 (Base + CRUD Obrigatório)**: Mapeamento completo da API REST com Axios (`pizzariatopApi.ts`), autenticação Bearer/sessão (`AdminAuthBanner`), vitrine ao vivo e 2 telas CRUD completas (`/api/sabores` e `/api/ingredientes`).
+- **v2 (Expansão Visual e Funcional — Iniciada)**: Sincronização inicial antes de portar a Dock oficial responsiva (celular/PC), identidade visual do site oficial PizzariaTop, Garçom IA (`POST /ai/chat`), reservas, avaliações completas, fidelidade/TopCoins, rastreamento e painel operacional.
