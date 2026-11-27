@@ -640,6 +640,192 @@ export async function resgatarRecompensa(idRecompensa: number) {
 }
 
 // ========================
+// Garçom IA, Estatísticas, Avaliações (POST), Status de Pedido, Notificações & Loja (v2)
+// ========================
+
+export interface AiChatHistoryItem {
+  role: string;
+  content: string;
+}
+
+export interface AiPizzaSuggestion {
+  tamanho?: { nome: string; preco?: number };
+  sabores?: Array<{ id?: number; nome: string; preco?: number }>;
+  massa?: { id?: number; nome: string; preco?: number };
+  borda?: { id?: number; nome: string; preco?: number };
+}
+
+export interface AiChatResponse {
+  success?: boolean;
+  response?: string;
+  reply?: string;
+  message?: string;
+  data?: {
+    response?: string;
+    reply?: string;
+    message?: string;
+  };
+}
+
+export interface StatsSummary {
+  faturamento_total?: number | string;
+  faturamentoTotal?: number | string;
+  receita_total?: number | string;
+  pedidos_hoje?: number;
+  pedidosHoje?: number;
+  total_pedidos?: number;
+  clientes_totais?: number;
+  clientesTotais?: number;
+  total_clientes?: number;
+  top_sabores?: Array<{ nome_sabor?: string; nome?: string; total?: number; quantidade?: number }>;
+  [key: string]: unknown;
+}
+
+export interface StatsChartPoint {
+  data?: string;
+  dia?: string;
+  label?: string;
+  valor?: number | string;
+  faturamento?: number | string;
+  total?: number | string;
+  pedidos?: number;
+}
+
+export interface CreateAvaliacaoPayload {
+  id_pedido: number;
+  avaliacao: number;
+  comentario?: string;
+  foto_avaliacao?: string;
+}
+
+export interface UpdatePedidoStatusPayload {
+  status_pedido: string;
+  observacoes?: string;
+}
+
+export interface NotificacaoItem {
+  id?: number;
+  id_notificacao?: number;
+  titulo?: string;
+  title?: string;
+  mensagem?: string;
+  message?: string;
+  tipo?: string;
+  lida?: boolean | number;
+  data_criacao?: string;
+  created_at?: string;
+}
+
+export interface LojaConfig {
+  nome_loja?: string;
+  horario_abertura?: string;
+  horario_fechamento?: string;
+  horario_funcionamento?: string;
+  taxa_entrega?: number | string;
+  tempo_medio?: number | string;
+  telefone?: string;
+  whatsapp?: string;
+  email?: string;
+  endereco?: string;
+  banner_texto?: string;
+  aberta?: boolean | number;
+  [key: string]: unknown;
+}
+
+export function parseAiSuggestion(rawText: string): {
+  cleanText: string;
+  suggestion: AiPizzaSuggestion | null;
+} {
+  if (!rawText) return { cleanText: '', suggestion: null };
+  const match = rawText.match(/\[SUGESTAO_JSON\]([\s\S]*?)\[\/SUGESTAO_JSON\]/i);
+  const cleanText = rawText.replace(/\[SUGESTAO_JSON\][\s\S]*?\[\/SUGESTAO_JSON\]/gi, '').trim();
+  if (!match || !match[1]) {
+    return { cleanText, suggestion: null };
+  }
+  try {
+    const parsed = JSON.parse(match[1].trim()) as AiPizzaSuggestion;
+    return { cleanText, suggestion: parsed };
+  } catch {
+    return { cleanText, suggestion: null };
+  }
+}
+
+export async function sendAiChat(payload: {
+  message: string;
+  history?: { role: string; content: string }[];
+  godMode?: boolean;
+}): Promise<AiChatResponse> {
+  const formattedHistory = payload.history?.map((item) => ({
+    role: item.role,
+    content: item.content,
+    text: item.content,
+  }));
+  const res = await pizzariatopApi.post<AiChatResponse>('/ai/chat', {
+    message: payload.message,
+    ...(formattedHistory ? { history: formattedHistory } : {}),
+    ...(payload.godMode !== undefined ? { godMode: payload.godMode } : {}),
+  });
+  return res.data;
+}
+
+export async function getStats(): Promise<StatsSummary> {
+  const res = await pizzariatopApi.get<{ data?: StatsSummary } & StatsSummary>('/stats');
+  return (res.data?.data ?? res.data) as StatsSummary;
+}
+
+export async function getStatsChart(): Promise<StatsChartPoint[]> {
+  const res = await pizzariatopApi.get('/stats/chart');
+  const raw = res.data;
+  if (Array.isArray(raw)) return raw as StatsChartPoint[];
+  if (raw && typeof raw === 'object') {
+    const obj = raw as Record<string, unknown>;
+    const candidate = obj.data ?? obj.chart ?? obj.series ?? obj.dias ?? obj.results;
+    if (Array.isArray(candidate)) return candidate as StatsChartPoint[];
+  }
+  return extractList<StatsChartPoint>(raw);
+}
+
+export async function createAvaliacao(payload: {
+  id_pedido: number;
+  avaliacao: number;
+  comentario?: string;
+  foto_avaliacao?: string;
+}) {
+  const res = await pizzariatopApi.post('/avaliacoes', payload);
+  return res.data;
+}
+
+export async function updatePedidoStatus(
+  id: number,
+  payload: { status_pedido: string; observacoes?: string }
+) {
+  const res = await pizzariatopApi.put(`/pedidos/${id}`, payload);
+  return res.data;
+}
+
+export async function getNotificacoes(): Promise<NotificacaoItem[]> {
+  const res = await pizzariatopApi.get('/notificacoes');
+  const raw = res.data;
+  if (Array.isArray(raw)) return raw as NotificacaoItem[];
+  if (raw && typeof raw === 'object') {
+    const obj = raw as Record<string, unknown>;
+    const candidate = obj.notificacoes ?? obj.data ?? obj.items ?? obj.results;
+    if (Array.isArray(candidate)) return candidate as NotificacaoItem[];
+  }
+  return extractList<NotificacaoItem>(raw);
+}
+
+export async function markNotificacoesRead() {
+  const res = await pizzariatopApi.put('/notificacoes');
+  return res.data;
+}
+
+export async function getLojaConfig(): Promise<LojaConfig> {
+  const res = await pizzariatopApi.get<{ data?: LojaConfig } & LojaConfig>('/configuracoes/loja');
+  return (res.data?.data ?? res.data) as LojaConfig;
+}
+
+// ========================
 // Testador Genérico GET (Axios)
 // ========================
 

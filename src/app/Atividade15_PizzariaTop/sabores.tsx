@@ -7,11 +7,13 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { router } from 'expo-router';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import {
   createSabor,
@@ -20,13 +22,17 @@ import {
   formatCurrency,
   getSaborById,
   getSabores,
-  resolveImageUrl,
   Sabor,
   SaborCategoria,
   SaborPayload,
   updateSabor,
 } from '../../services/pizzariatopApi';
+import {
+  getPizzaImageSource,
+  getPizzaRichDescription,
+} from '../../utils/pizzaImageMap';
 import { PIZZARIA_COLORS, styles } from '../../styles/atividade15_pizzariatop_styles';
+import { usePizzariaTop } from '../../components/pizzariatop/PizzariaTopContext';
 import { AdminAuthBanner } from '../../components/pizzariatop/AdminAuthBanner';
 import { ConfirmDeleteModal } from '../../components/pizzariatop/ConfirmDeleteModal';
 import { FeedbackBanner, FeedbackType } from '../../components/pizzariatop/FeedbackBanner';
@@ -34,6 +40,9 @@ import { PizzariaTopShell } from '../../components/pizzariatop/PizzariaTopChrome
 import { SaborFormModal } from '../../components/pizzariatop/SaborFormModal';
 
 type CategoriaFiltro = 'todas' | SaborCategoria;
+type SaborSortMode = 'destaques' | 'az' | 'menor_preco';
+
+const BASE_PIZZA_GRANDE_PRECO = 45;
 
 const FILTRO_CATEGORIAS: { key: CategoriaFiltro; label: string }[] = [
   { key: 'todas', label: 'Todas' },
@@ -42,6 +51,42 @@ const FILTRO_CATEGORIAS: { key: CategoriaFiltro; label: string }[] = [
   { key: 'premium', label: 'Premium' },
   { key: 'doce', label: 'Doce' },
 ];
+
+const SORT_OPTIONS: {
+  key: SaborSortMode;
+  label: string;
+  icon: keyof typeof Feather.glyphMap;
+}[] = [
+  { key: 'destaques', label: 'Destaques', icon: 'star' },
+  { key: 'az', label: 'A-Z', icon: 'type' },
+  { key: 'menor_preco', label: 'Menor Preço', icon: 'trending-down' },
+];
+
+const CATEGORIA_BADGE_THEME: Record<
+  string,
+  { color: string; bg: string; border: string }
+> = {
+  tradicional: {
+    color: '#FDBA74',
+    bg: 'rgba(255, 107, 53, 0.15)',
+    border: 'rgba(255, 107, 53, 0.42)',
+  },
+  especial: {
+    color: '#FACC15',
+    bg: 'rgba(250, 204, 21, 0.16)',
+    border: 'rgba(250, 204, 21, 0.45)',
+  },
+  premium: {
+    color: '#C4B5FD',
+    bg: 'rgba(139, 92, 246, 0.18)',
+    border: 'rgba(139, 92, 246, 0.48)',
+  },
+  doce: {
+    color: '#F9A8D4',
+    bg: 'rgba(244, 114, 182, 0.16)',
+    border: 'rgba(244, 114, 182, 0.45)',
+  },
+};
 
 const HTTP_BADGES: {
   method: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -90,8 +135,40 @@ function isFlagActive(val: unknown, fallback = false): boolean {
   return Boolean(val);
 }
 
-function formatCategoriaLabel(cat?: string | null): string {
-  const normalized = String(cat ?? '').trim().toLowerCase();
+function normalizeCategoria(sabor: Sabor): SaborCategoria {
+  const raw = String(sabor.categoria_sabor ?? '').trim().toLowerCase();
+  if (raw === 'tradicional' || raw === 'especial' || raw === 'premium' || raw === 'doce') {
+    return raw;
+  }
+  const nomeLower = String(sabor.nome_sabor ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+  if (
+    nomeLower.includes('chocolate') ||
+    nomeLower.includes('morango') ||
+    nomeLower.includes('banana') ||
+    nomeLower.includes('romeu') ||
+    nomeLower.includes('brigadeiro') ||
+    nomeLower.includes('nutella')
+  ) {
+    return 'doce';
+  }
+  if (
+    nomeLower.includes('camarao') ||
+    nomeLower.includes('carne seca') ||
+    nomeLower.includes('4 queijos') ||
+    nomeLower.includes('quatro queijos')
+  ) {
+    return 'especial';
+  }
+  return 'tradicional';
+}
+
+function formatCategoriaLabel(cat?: string | null, sabor?: Sabor): string {
+  const normalized = sabor
+    ? normalizeCategoria(sabor)
+    : String(cat ?? '').trim().toLowerCase();
   switch (normalized) {
     case 'tradicional':
       return 'Tradicional';
@@ -107,6 +184,8 @@ function formatCategoriaLabel(cat?: string | null): string {
 }
 
 export default function SaboresCrudScreen() {
+  const { addToCart, cartCount } = usePizzariaTop();
+
   const [sabores, setSabores] = useState<Sabor[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -114,6 +193,7 @@ export default function SaboresCrudScreen() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoria, setSelectedCategoria] = useState<CategoriaFiltro>('todas');
+  const [sortMode, setSortMode] = useState<SaborSortMode>('destaques');
 
   const [feedback, setFeedback] = useState<{
     type: FeedbackType;
@@ -159,10 +239,29 @@ export default function SaboresCrudScreen() {
     fetchSabores(false);
   }, [fetchSabores]);
 
+  // Contadores para a barra de mini-KPIs
+  const kpiStats = useMemo(() => {
+    let destaques = 0;
+    let doces = 0;
+    let especiais = 0;
+    for (const s of sabores) {
+      if (isFlagActive(s.destaque, false)) destaques += 1;
+      const cat = normalizeCategoria(s);
+      if (cat === 'doce') doces += 1;
+      if (cat === 'especial' || cat === 'premium') especiais += 1;
+    }
+    return {
+      total: sabores.length,
+      destaques,
+      doces,
+      especiais,
+    };
+  }, [sabores]);
+
   const filteredSabores = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    return sabores.filter((item) => {
-      const cat = String(item.categoria_sabor ?? 'tradicional').trim().toLowerCase();
+    const filtered = sabores.filter((item) => {
+      const cat = normalizeCategoria(item);
       if (selectedCategoria !== 'todas' && cat !== selectedCategoria) {
         return false;
       }
@@ -171,7 +270,72 @@ export default function SaboresCrudScreen() {
       const desc = String(item.descricao ?? '').toLowerCase();
       return nome.includes(q) || desc.includes(q);
     });
-  }, [sabores, searchQuery, selectedCategoria]);
+
+    const sorted = [...filtered];
+    sorted.sort((a, b) => {
+      if (sortMode === 'az') {
+        return String(a.nome_sabor ?? '').localeCompare(
+          String(b.nome_sabor ?? ''),
+          'pt-BR',
+          { sensitivity: 'base' }
+        );
+      }
+      if (sortMode === 'menor_preco') {
+        const pa = Number(a.preco_adicional ?? 0);
+        const pb = Number(b.preco_adicional ?? 0);
+        if (pa !== pb) return pa - pb;
+        return String(a.nome_sabor ?? '').localeCompare(
+          String(b.nome_sabor ?? ''),
+          'pt-BR',
+          { sensitivity: 'base' }
+        );
+      }
+      // 'destaques': destaques ativos primeiro -> disponíveis -> nome
+      const da = isFlagActive(a.destaque, false) ? 1 : 0;
+      const db = isFlagActive(b.destaque, false) ? 1 : 0;
+      if (da !== db) return db - da;
+      const ava = isFlagActive(a.disponivel, true) ? 1 : 0;
+      const avb = isFlagActive(b.disponivel, true) ? 1 : 0;
+      if (ava !== avb) return avb - ava;
+      return String(a.nome_sabor ?? '').localeCompare(
+        String(b.nome_sabor ?? ''),
+        'pt-BR',
+        { sensitivity: 'base' }
+      );
+    });
+
+    return sorted;
+  }, [sabores, searchQuery, selectedCategoria, sortMode]);
+
+  const handleQuickOrder = (sabor: Sabor) => {
+    const disponivel = isFlagActive(sabor.disponivel, true);
+    if (!disponivel) {
+      setFeedback({
+        type: 'info',
+        message: `O sabor "${sabor.nome_sabor}" está temporariamente indisponível.`,
+      });
+      return;
+    }
+    const id = getSaborId(sabor) || 1;
+    const adicional = Number(sabor.preco_adicional ?? 0);
+    const precoUnitario = Number((BASE_PIZZA_GRANDE_PRECO + adicional).toFixed(2));
+
+    addToCart({
+      id_produto: id,
+      tipo_item: 'pizza',
+      nome: `Pizza ${sabor.nome_sabor} (Grande)`,
+      detalhes: `Sabor: ${sabor.nome_sabor} · Grande (8 fatias) · Massa Tradicional`,
+      quantidade: 1,
+      preco_unitario: precoUnitario,
+    });
+
+    setFeedback({
+      type: 'success',
+      message: `🍕 Pizza de "${sabor.nome_sabor}" (${formatCurrency(
+        precoUnitario
+      )}) adicionada ao carrinho!`,
+    });
+  };
 
   const handleOpenCreate = () => {
     setFormMode('create');
@@ -303,10 +467,10 @@ export default function SaboresCrudScreen() {
             <Text style={styles.heroBadgeText}>TELA 1 · API REST AXIOS</Text>
           </View>
 
-          <Text style={styles.heroTitle}>Sabores · CRUD</Text>
+          <Text style={styles.heroTitle}>Sabores · CRUD & Vitrine</Text>
           <Text style={styles.heroSubtitle}>
-            Gerenciamento completo do recurso /api/sabores com listagem, consulta por ID,
-            cadastro, atualização e exclusão.
+            Gerenciamento completo do recurso /api/sabores com fotos oficiais, listagem,
+            consulta por ID, cadastro, atualização, exclusão e pedido rápido.
           </Text>
 
           <View style={styles.httpPillRow}>
@@ -350,6 +514,17 @@ export default function SaboresCrudScreen() {
                 {refreshing ? 'Atualizando...' : 'Atualizar'}
               </Text>
             </TouchableOpacity>
+
+            {cartCount > 0 ? (
+              <TouchableOpacity
+                style={styles.goldCtaBtn}
+                onPress={() => router.push('/Atividade15_PizzariaTop/pedidos')}
+                activeOpacity={0.85}
+              >
+                <Feather name="shopping-cart" size={15} color="#111827" />
+                <Text style={styles.goldCtaText}>Carrinho ({cartCount})</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
         </View>
       </View>
@@ -357,7 +532,7 @@ export default function SaboresCrudScreen() {
       {/* Autenticação Admin (necessária para PUT e DELETE em produção) */}
       <AdminAuthBanner />
 
-      {/* Feedback Banner para operações CRUD */}
+      {/* Feedback Banner para operações CRUD e Pedido Rápido */}
       {feedback ? (
         <FeedbackBanner
           type={feedback.type}
@@ -365,6 +540,87 @@ export default function SaboresCrudScreen() {
           onDismiss={() => setFeedback(null)}
         />
       ) : null}
+
+      {/* Barra de Mini-KPIs (Total · Destaques · Doces · Especiais) */}
+      <View style={localStyles.kpiStrip}>
+        <TouchableOpacity
+          style={[
+            localStyles.kpiCard,
+            selectedCategoria === 'todas' && localStyles.kpiCardActiveOrange,
+          ]}
+          onPress={() => setSelectedCategoria('todas')}
+          activeOpacity={0.82}
+        >
+          <View style={[localStyles.kpiIconCircle, { backgroundColor: 'rgba(255, 107, 53, 0.18)' }]}>
+            <FontAwesome5 name="pizza-slice" size={13} color={PIZZARIA_COLORS.fireOrange} />
+          </View>
+          <View>
+            <Text style={localStyles.kpiValue}>{kpiStats.total}</Text>
+            <Text style={localStyles.kpiLabel}>Total</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            localStyles.kpiCard,
+            sortMode === 'destaques' && localStyles.kpiCardActiveGold,
+          ]}
+          onPress={() => setSortMode('destaques')}
+          activeOpacity={0.82}
+        >
+          <View style={[localStyles.kpiIconCircle, { backgroundColor: 'rgba(250, 204, 21, 0.18)' }]}>
+            <Feather name="star" size={14} color={PIZZARIA_COLORS.gold} />
+          </View>
+          <View>
+            <Text style={[localStyles.kpiValue, { color: PIZZARIA_COLORS.gold }]}>
+              {kpiStats.destaques}
+            </Text>
+            <Text style={localStyles.kpiLabel}>Destaques</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            localStyles.kpiCard,
+            selectedCategoria === 'doce' && localStyles.kpiCardActivePink,
+          ]}
+          onPress={() =>
+            setSelectedCategoria((prev) => (prev === 'doce' ? 'todas' : 'doce'))
+          }
+          activeOpacity={0.82}
+        >
+          <View style={[localStyles.kpiIconCircle, { backgroundColor: 'rgba(244, 114, 182, 0.18)' }]}>
+            <Feather name="heart" size={14} color="#F472B6" />
+          </View>
+          <View>
+            <Text style={[localStyles.kpiValue, { color: '#F9A8D4' }]}>
+              {kpiStats.doces}
+            </Text>
+            <Text style={localStyles.kpiLabel}>Doces</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            localStyles.kpiCard,
+            selectedCategoria === 'especial' && localStyles.kpiCardActiveViolet,
+          ]}
+          onPress={() =>
+            setSelectedCategoria((prev) => (prev === 'especial' ? 'todas' : 'especial'))
+          }
+          activeOpacity={0.82}
+        >
+          <View style={[localStyles.kpiIconCircle, { backgroundColor: 'rgba(139, 92, 246, 0.18)' }]}>
+            <Feather name="award" size={14} color="#C4B5FD" />
+          </View>
+          <View>
+            <Text style={[localStyles.kpiValue, { color: '#C4B5FD' }]}>
+              {kpiStats.especiais}
+            </Text>
+            <Text style={localStyles.kpiLabel}>Especiais</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
 
       {/* Barra de Busca */}
       <View style={styles.searchBarWrap}>
@@ -411,6 +667,45 @@ export default function SaboresCrudScreen() {
         })}
       </ScrollView>
 
+      {/* Chips de Ordenação (Destaques · A-Z · Menor Preço) */}
+      <View style={localStyles.sortStripRow}>
+        <View style={localStyles.sortLabelWrap}>
+          <Feather name="sliders" size={13} color={PIZZARIA_COLORS.gold} />
+          <Text style={localStyles.sortLabelText}>Ordenar:</Text>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={localStyles.sortChipsContent}
+        >
+          {SORT_OPTIONS.map((opt) => {
+            const active = sortMode === opt.key;
+            return (
+              <TouchableOpacity
+                key={opt.key}
+                style={[localStyles.sortChip, active && localStyles.sortChipActive]}
+                onPress={() => setSortMode(opt.key)}
+                activeOpacity={0.8}
+              >
+                <Feather
+                  name={opt.icon}
+                  size={12}
+                  color={active ? '#111827' : PIZZARIA_COLORS.gold}
+                />
+                <Text
+                  style={[
+                    localStyles.sortChipText,
+                    active && localStyles.sortChipTextActive,
+                  ]}
+                >
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+
       {/* Cabeçalho da listagem */}
       <View style={styles.crudHeaderRow}>
         <View style={styles.sectionTitleRow}>
@@ -451,32 +746,46 @@ export default function SaboresCrudScreen() {
     const id = getSaborId(item);
     const disponivel = isFlagActive(item.disponivel, true);
     const destaque = isFlagActive(item.destaque, false);
-    const imgUri = resolveImageUrl(item.imagem_url);
     const precoNum = Number(item.preco_adicional ?? 0);
+    const categoriaNorm = normalizeCategoria(item);
+    const catTheme = CATEGORIA_BADGE_THEME[categoriaNorm] ?? CATEGORIA_BADGE_THEME.tradicional;
+    const pizzaImgSource = getPizzaImageSource(item.nome_sabor, item.imagem_url);
+    const descricaoRica = getPizzaRichDescription(item.nome_sabor, item.descricao);
 
     return (
       <View style={styles.maxWidthWrap}>
         <TouchableOpacity
-          style={styles.crudCard}
+          style={[
+            styles.crudCard,
+            destaque && { borderColor: PIZZARIA_COLORS.goldBorder },
+          ]}
           onPress={() => handleOpenDetails(item)}
           activeOpacity={0.88}
         >
           <View style={styles.crudCardHeader}>
-            <View style={[styles.menuItemRow, { flex: 1 }]}>
-              <View style={styles.menuThumb}>
-                {imgUri ? (
+            <View style={[styles.menuItemRow, { flex: 1, alignItems: 'flex-start' }]}>
+              <View style={localStyles.pizzaThumbOuter}>
+                <View
+                  style={[
+                    localStyles.pizzaThumbFrame,
+                    {
+                      borderColor: destaque
+                        ? PIZZARIA_COLORS.gold
+                        : PIZZARIA_COLORS.fireOrange,
+                    },
+                  ]}
+                >
                   <Image
-                    source={{ uri: imgUri }}
-                    style={styles.menuThumbImg}
+                    source={pizzaImgSource}
+                    style={localStyles.pizzaThumbImg}
                     resizeMode="cover"
                   />
-                ) : (
-                  <FontAwesome5
-                    name="pizza-slice"
-                    size={22}
-                    color={PIZZARIA_COLORS.fireOrange}
-                  />
-                )}
+                </View>
+                {destaque ? (
+                  <View style={localStyles.pizzaThumbStarBadge}>
+                    <Feather name="star" size={10} color="#111827" />
+                  </View>
+                ) : null}
               </View>
 
               <View style={{ flex: 1 }}>
@@ -487,23 +796,22 @@ export default function SaboresCrudScreen() {
                   <Text style={styles.sectionMeta}>#{id}</Text>
                 </View>
 
-                {item.descricao ? (
-                  <Text style={styles.itemDesc} numberOfLines={2}>
-                    {item.descricao}
-                  </Text>
-                ) : (
-                  <Text style={[styles.itemDesc, { fontStyle: 'italic' }]}>
-                    Sem descrição cadastrada
-                  </Text>
-                )}
+                <Text style={styles.itemDesc} numberOfLines={2}>
+                  {descricaoRica}
+                </Text>
               </View>
             </View>
           </View>
 
           <View style={styles.crudMetaRow}>
-            <View style={styles.tagPill}>
-              <Text style={styles.tagPillText}>
-                {formatCategoriaLabel(item.categoria_sabor)}
+            <View
+              style={[
+                styles.tagPill,
+                { backgroundColor: catTheme.bg, borderColor: catTheme.border },
+              ]}
+            >
+              <Text style={[styles.tagPillText, { color: catTheme.color }]}>
+                {formatCategoriaLabel(item.categoria_sabor, item)}
               </Text>
             </View>
 
@@ -545,15 +853,36 @@ export default function SaboresCrudScreen() {
             ) : null}
           </View>
 
-          <View style={styles.crudCardFooter}>
+          <View style={[styles.crudCardFooter, { flexWrap: 'wrap' }]}>
             <View>
-              <Text style={styles.sectionMeta}>Adicional</Text>
+              <Text style={styles.sectionMeta}>Adicional Sabor</Text>
               <Text style={styles.priceText}>
-                {precoNum > 0 ? `+ ${formatCurrency(precoNum)}` : formatCurrency(0)}
+                {precoNum > 0 ? `+ ${formatCurrency(precoNum)}` : 'Incluso (R$ 0,00)'}
               </Text>
             </View>
 
-            <View style={styles.crudActionsRow}>
+            <View style={[styles.crudActionsRow, { flexWrap: 'wrap', justifyContent: 'flex-end' }]}>
+              <TouchableOpacity
+                style={[
+                  localStyles.quickOrderBtn,
+                  !disponivel && { opacity: 0.45 },
+                ]}
+                onPress={() => handleQuickOrder(item)}
+                activeOpacity={0.82}
+              >
+                <Feather name="shopping-cart" size={13} color="#111827" />
+                <Text style={localStyles.quickOrderBtnText}>Pedir</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={localStyles.getByIdBtn}
+                onPress={() => handleOpenDetails(item)}
+                activeOpacity={0.8}
+              >
+                <Feather name="eye" size={13} color={PIZZARIA_COLORS.cyan} />
+                <Text style={localStyles.getByIdBtnText}>GET /:id</Text>
+              </TouchableOpacity>
+
               <TouchableOpacity
                 style={styles.editActionBtn}
                 onPress={() => handleOpenEdit(item)}
@@ -724,19 +1053,16 @@ export default function SaboresCrudScreen() {
               </View>
             ) : detailSabor ? (
               <View style={styles.modalBody}>
-                {resolveImageUrl(detailSabor.imagem_url) ? (
+                <View style={localStyles.detailBannerWrap}>
                   <Image
-                    source={{ uri: resolveImageUrl(detailSabor.imagem_url) as string }}
-                    style={{
-                      width: '100%',
-                      height: 150,
-                      borderRadius: 14,
-                      marginBottom: 12,
-                      backgroundColor: PIZZARIA_COLORS.bgElevated,
-                    }}
+                    source={getPizzaImageSource(
+                      detailSabor.nome_sabor,
+                      detailSabor.imagem_url
+                    )}
+                    style={localStyles.detailBannerImg}
                     resizeMode="cover"
                   />
-                ) : null}
+                </View>
 
                 <Text
                   style={[
@@ -744,7 +1070,10 @@ export default function SaboresCrudScreen() {
                     { color: PIZZARIA_COLORS.textSecondary, marginBottom: 12 },
                   ]}
                 >
-                  {detailSabor.descricao || 'Sem descrição informada.'}
+                  {getPizzaRichDescription(
+                    detailSabor.nome_sabor,
+                    detailSabor.descricao
+                  )}
                 </Text>
 
                 <View style={styles.crudMetaRow}>
@@ -755,12 +1084,12 @@ export default function SaboresCrudScreen() {
                   </View>
                   <View style={styles.tagPill}>
                     <Text style={styles.tagPillText}>
-                      {formatCategoriaLabel(detailSabor.categoria_sabor)}
+                      {formatCategoriaLabel(detailSabor.categoria_sabor, detailSabor)}
                     </Text>
                   </View>
                   <View style={styles.tagPill}>
                     <Text style={[styles.tagPillText, { color: PIZZARIA_COLORS.gold }]}>
-                      {formatCurrency(detailSabor.preco_adicional)}
+                      +{formatCurrency(detailSabor.preco_adicional)}
                     </Text>
                   </View>
                   <View
@@ -798,17 +1127,30 @@ export default function SaboresCrudScreen() {
                 <Text style={styles.modalCancelText}>Fechar</Text>
               </TouchableOpacity>
               {detailSabor ? (
-                <TouchableOpacity
-                  style={[styles.primaryCtaBtn, { flex: 1.2 }]}
-                  onPress={() => {
-                    const target = detailSabor;
-                    setDetailVisible(false);
-                    handleOpenEdit(target);
-                  }}
-                >
-                  <Feather name="edit-2" size={14} color="#FFF7ED" />
-                  <Text style={styles.primaryCtaText}>Editar Sabor</Text>
-                </TouchableOpacity>
+                <>
+                  <TouchableOpacity
+                    style={[styles.goldCtaBtn, { flex: 1 }]}
+                    onPress={() => {
+                      const target = detailSabor;
+                      setDetailVisible(false);
+                      handleQuickOrder(target);
+                    }}
+                  >
+                    <Feather name="shopping-cart" size={14} color="#111827" />
+                    <Text style={styles.goldCtaText}>Pedir</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.primaryCtaBtn, { flex: 1.1 }]}
+                    onPress={() => {
+                      const target = detailSabor;
+                      setDetailVisible(false);
+                      handleOpenEdit(target);
+                    }}
+                  >
+                    <Feather name="edit-2" size={14} color="#FFF7ED" />
+                    <Text style={styles.primaryCtaText}>Editar</Text>
+                  </TouchableOpacity>
+                </>
               ) : null}
             </View>
           </Pressable>
@@ -817,3 +1159,180 @@ export default function SaboresCrudScreen() {
     </PizzariaTopShell>
   );
 }
+
+const localStyles = StyleSheet.create({
+  kpiStrip: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 12,
+  },
+  kpiCard: {
+    flexGrow: 1,
+    minWidth: '22%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    backgroundColor: PIZZARIA_COLORS.bgCard,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: PIZZARIA_COLORS.glassBorder,
+    paddingVertical: 10,
+    paddingHorizontal: 11,
+  },
+  kpiCardActiveOrange: {
+    borderColor: PIZZARIA_COLORS.fireOrange,
+    backgroundColor: 'rgba(255, 107, 53, 0.12)',
+  },
+  kpiCardActiveGold: {
+    borderColor: PIZZARIA_COLORS.goldBorder,
+    backgroundColor: 'rgba(250, 204, 21, 0.10)',
+  },
+  kpiCardActivePink: {
+    borderColor: 'rgba(244, 114, 182, 0.55)',
+    backgroundColor: 'rgba(244, 114, 182, 0.12)',
+  },
+  kpiCardActiveViolet: {
+    borderColor: PIZZARIA_COLORS.violetBorder,
+    backgroundColor: 'rgba(139, 92, 246, 0.14)',
+  },
+  kpiIconCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  kpiValue: {
+    color: PIZZARIA_COLORS.textPrimary,
+    fontSize: 16,
+    fontWeight: '900',
+    lineHeight: 19,
+  },
+  kpiLabel: {
+    color: PIZZARIA_COLORS.textMuted,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  sortStripRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  sortLabelWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  sortLabelText: {
+    color: PIZZARIA_COLORS.textSecondary,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  sortChipsContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+  },
+  sortChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(250, 204, 21, 0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(250, 204, 21, 0.32)',
+  },
+  sortChipActive: {
+    backgroundColor: PIZZARIA_COLORS.gold,
+    borderColor: '#FEF08A',
+  },
+  sortChipText: {
+    color: '#FDE68A',
+    fontSize: 11.5,
+    fontWeight: '800',
+  },
+  sortChipTextActive: {
+    color: '#111827',
+    fontWeight: '900',
+  },
+  pizzaThumbOuter: {
+    position: 'relative',
+    width: 64,
+    height: 64,
+  },
+  pizzaThumbFrame: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    borderWidth: 2,
+    backgroundColor: PIZZARIA_COLORS.bgElevated,
+    overflow: 'hidden',
+  },
+  pizzaThumbImg: {
+    width: '100%',
+    height: '100%',
+  },
+  pizzaThumbStarBadge: {
+    position: 'absolute',
+    bottom: -3,
+    right: -3,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: PIZZARIA_COLORS.gold,
+    borderWidth: 2,
+    borderColor: PIZZARIA_COLORS.bgCard,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickOrderBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 11,
+    paddingVertical: 7,
+    borderRadius: 10,
+    backgroundColor: PIZZARIA_COLORS.gold,
+    borderWidth: 1,
+    borderColor: '#FEF08A',
+  },
+  quickOrderBtnText: {
+    color: '#111827',
+    fontSize: 12,
+    fontWeight: '900',
+  },
+  getByIdBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
+    borderRadius: 10,
+    backgroundColor: 'rgba(6, 182, 212, 0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(6, 182, 212, 0.40)',
+  },
+  getByIdBtnText: {
+    color: PIZZARIA_COLORS.cyan,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  detailBannerWrap: {
+    width: '100%',
+    height: 165,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1.5,
+    borderColor: PIZZARIA_COLORS.goldBorder,
+    marginBottom: 12,
+    backgroundColor: PIZZARIA_COLORS.bgElevated,
+  },
+  detailBannerImg: {
+    width: '100%',
+    height: '100%',
+  },
+});

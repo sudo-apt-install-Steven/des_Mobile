@@ -321,7 +321,7 @@ export default function Hub() {
               <Text style={styles.sectionTag}>5 Atividades</Text>
             </View>
 
-            {/* Atividade 15 - PizzariaTop (CRUD REST com Axios + Expo Router) */}
+            {/* Atividade 15 - PizzariaTop (CRUD REST com Axios + Ecossistema Oficial) */}
             <AnimatedCard
               style={styles.featuredCardFire}
               onPress={() => router.push('/Atividade15_PizzariaTop')}
@@ -331,30 +331,30 @@ export default function Hub() {
                 <View style={styles.featuredBadgeRow}>
                   <View style={styles.featuredBadgeFire}>
                     <FontAwesome5 name="pizza-slice" size={12} color="#FACC15" />
-                    <Text style={styles.featuredBadgeFireText}>ATIVIDADE PRÁTICA · CRUD AXIOS</Text>
+                    <Text style={styles.featuredBadgeFireText}>ECOSSISTEMA OFICIAL · CRUD AXIOS</Text>
                   </View>
                   <Text style={[styles.featuredNumber, { color: '#FDBA74' }]}>#2º-05</Text>
                 </View>
-                <Text style={styles.featuredTitle}>Atividade Prática CRUD · PizzariaTop (Axios)</Text>
+                <Text style={styles.featuredTitle}>Pizzaria TOP v4 · CRUD REST & Ecossistema (Axios)</Text>
                 <Text style={styles.featuredDescription}>
-                  App redesenhado no tema artesanal PizzariaTop com Expo Router e Axios: 2 telas CRUD completas (/api/sabores e /api/ingredientes) com GET, POST, PUT e DELETE, autenticação Admin Bearer, feedback visual e vitrine ao vivo.
+                  Ecossistema completo inspirado no site oficial Pizzaria TOP: Dock responsiva (4 modos Mobile/PC), Garçom IA, Carrossel de Pizzas, Reserva de Mesas, Clube VIP/Painel KDS e as 2 Telas CRUD completas (/api/sabores e /api/ingredientes) via Axios.
                 </Text>
                 <View style={styles.tagsRow}>
                   <View style={styles.tagChip}>
-                    <Text style={styles.tagChipText}>GET · POST · PUT · DELETE</Text>
+                    <Text style={styles.tagChipText}>2 CRUDs: /sabores & /ingredientes</Text>
                   </View>
                   <View style={styles.tagChip}>
-                    <Text style={styles.tagChipText}>/api/sabores</Text>
+                    <Text style={styles.tagChipText}>Dock 4 Modos (Mobile/PC)</Text>
                   </View>
                   <View style={styles.tagChip}>
-                    <Text style={styles.tagChipText}>/api/ingredientes</Text>
+                    <Text style={styles.tagChipText}>Garçom IA + Carrossel</Text>
                   </View>
                   <View style={styles.tagChip}>
-                    <Text style={styles.tagChipText}>Expo Router + Axios</Text>
+                    <Text style={styles.tagChipText}>Reservas · VIP · KDS</Text>
                   </View>
                 </View>
                 <View style={styles.featuredButtonFire}>
-                  <Text style={styles.featuredButtonText}>Abrir PizzariaTop CRUD</Text>
+                  <Text style={styles.featuredButtonText}>Abrir Pizzaria TOP v4</Text>
                   <Feather name="arrow-right" size={16} color="#FFFFFF" />
                 </View>
               </View>

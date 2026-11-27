@@ -169,4 +169,13 @@
 
 ## 11. Registro de Evolução do App Mobile (`des_Mobile`)
 - **v1 (Base + CRUD Obrigatório)**: Mapeamento completo da API REST com Axios (`pizzariatopApi.ts`), autenticação Bearer/sessão (`AdminAuthBanner`), vitrine ao vivo e 2 telas CRUD completas (`/api/sabores` e `/api/ingredientes`).
-- **v2 (Expansão Visual e Funcional — Iniciada)**: Sincronização inicial antes de portar a Dock oficial responsiva (celular/PC), identidade visual do site oficial PizzariaTop, Garçom IA (`POST /ai/chat`), reservas, avaliações completas, fidelidade/TopCoins, rastreamento e painel operacional.
+- **v4 (Ecossistema Oficial Pizzaria TOP + CRUD Axios — Entregue)**:
+  - **Navegação `DockMenu` & `NavigationManager` (4 Modos Mobile/PC)**: `dock` (cápsula glass responsiva `<768px` e `>=768px` com tema Dourado Cliente `#FACC15` e Violeta Staff/Admin `#8B5CF6`), `classic` (barra superior), `sidebar` (`240px` fixa no PC `>=900px` / drawer mobile) e `floating` (FAB leque no canto inferior direito), configurável no Header e em `perfil.tsx`.
+  - **Garçom IA (`SmartWaiterModal`)**: Chat integrado a `POST /ai/chat` com parser `[SUGESTAO_JSON]`, chips rápidos, fallback inteligente consultando cardápio real (`GET /sabores`, `GET /combos`) e botão 1-clique para adicionar sugestão ao carrinho.
+  - **Vitrine & `PizzaShowcaseCarousel`**: Hero laranja vibrante oficial com `LOGO_PIZZARIATOP`, fita de cupom ativo (`GET /cupons`), carrossel interativo com 16 assets `.webp` locais (`pizzaImageMap.ts`), combos (`GET /combos`) e top avaliações verificadas.
+  - **2 Telas CRUD Obrigatórias Aprimoradas (`sabores.tsx` e `ingredientes.tsx`)**: Operações completas `GET`, `GET /:id`, `POST`, `PUT` e `DELETE` via Axios com fotos reais, mini-KPIs, busca, filtros por categoria/tipo e ordenação.
+  - **Montador Visual (`montar.tsx`)**: Comparativo `PIZZA_TAMANHOS_IMG`, preview dinâmico do disco da pizza dividido por sabores (`1/1` a `4/4`), bordas e cálculo `POST /calculate`.
+  - **Reserva de 12 Mesas (`reservas.tsx`)**: Planta interativa de 12 mesas (`4` e `6` lugares) por data, horário, ocasião e ambiente (`Salão Forno a Lenha`, `Varanda Gourmet`, `Área VIP Climatizada`).
+  - **Mural de Avaliações (`avaliacoes.tsx`)**: KPIs reais (`GET /avaliacoes?limit=50`), filtros, lightbox de fotos, curtida (`POST /avaliacoes/:id/like`) e envio de nova avaliação (`POST /avaliacoes`).
+  - **Clube VIP & Painel Admin/KDS (`clube_admin.tsx`)**: Assinatura Clube TOP Premium (`R$ 39,90/mês`), saldo `TopCoins` + resgate (`GET /recompensas`, `POST /resgates`), KPIs `GET /stats`, gráfico de 7 dias (`GET /stats/chart`) e quadro KDS da cozinha em 3 colunas com atualização de status em 1 clique (`PUT /pedidos/:id`).
+  - **Carrinho, Divisão de Conta & Rastreio (`pedidos.tsx`)**: Calculadora de divisão entre `2 a 8` amigos, validação de CEP/cupom, criação de pedido e timeline de 5 passos + mapa simulado integrado a `GET /tracking/:pedidoId`.

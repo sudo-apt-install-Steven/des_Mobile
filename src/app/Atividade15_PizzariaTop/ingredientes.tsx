@@ -6,6 +6,7 @@ import {
   Pressable,
   RefreshControl,
   ScrollView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -35,30 +36,90 @@ import {
   IngredienteFormModal,
 } from '../../components/pizzariatop/IngredienteFormModal';
 
-type FilterTipo = 'todos' | IngredienteTipo;
+type FilterTipo = 'todos' | IngredienteTipo | 'doces_outros';
+type IngredienteSortMode = 'por_tipo' | 'az' | 'menor_preco';
+
+interface TipoVisualTheme {
+  label: string;
+  emoji: string;
+  icon: keyof typeof Feather.glyphMap;
+  color: string;
+  bg: string;
+  border: string;
+  order: number;
+}
+
+const TIPO_THEME_MAP: Record<string, TipoVisualTheme> = {
+  queijos: {
+    label: 'Queijos',
+    emoji: '🧀',
+    icon: 'disc',
+    color: '#FACC15',
+    bg: 'rgba(250, 204, 21, 0.16)',
+    border: 'rgba(250, 204, 21, 0.45)',
+    order: 1,
+  },
+  carnes: {
+    label: 'Carnes',
+    emoji: '🥓',
+    icon: 'award',
+    color: '#FB7185',
+    bg: 'rgba(244, 63, 94, 0.16)',
+    border: 'rgba(244, 63, 94, 0.45)',
+    order: 2,
+  },
+  vegetais: {
+    label: 'Vegetais',
+    emoji: '🌿',
+    icon: 'feather',
+    color: '#34D399',
+    bg: 'rgba(16, 185, 129, 0.16)',
+    border: 'rgba(16, 185, 129, 0.45)',
+    order: 3,
+  },
+  doces: {
+    label: 'Doces',
+    emoji: '🍫',
+    icon: 'heart',
+    color: '#F472B6',
+    bg: 'rgba(244, 114, 182, 0.16)',
+    border: 'rgba(244, 114, 182, 0.45)',
+    order: 4,
+  },
+  frutas: {
+    label: 'Frutas',
+    emoji: '🍓',
+    icon: 'sun',
+    color: '#FB923C',
+    bg: 'rgba(251, 146, 60, 0.16)',
+    border: 'rgba(251, 146, 60, 0.45)',
+    order: 5,
+  },
+  outros: {
+    label: 'Outros',
+    emoji: '✨',
+    icon: 'layers',
+    color: '#A78BFA',
+    bg: 'rgba(139, 92, 246, 0.16)',
+    border: 'rgba(139, 92, 246, 0.45)',
+    order: 6,
+  },
+};
 
 const FILTER_OPTIONS: Array<{ key: FilterTipo; label: string }> = [
   { key: 'todos', label: 'Todos' },
   ...INGREDIENTE_TIPOS,
 ];
 
-const TIPO_LABEL_MAP: Record<string, string> = {
-  queijos: 'Queijos',
-  carnes: 'Carnes',
-  vegetais: 'Vegetais',
-  doces: 'Doces',
-  frutas: 'Frutas',
-  outros: 'Outros',
-};
-
-const TIPO_ICON_MAP: Record<string, keyof typeof Feather.glyphMap> = {
-  queijos: 'disc',
-  carnes: 'award',
-  vegetais: 'feather',
-  doces: 'heart',
-  frutas: 'sun',
-  outros: 'layers',
-};
+const SORT_OPTIONS: Array<{
+  key: IngredienteSortMode;
+  label: string;
+  icon: keyof typeof Feather.glyphMap;
+}> = [
+  { key: 'por_tipo', label: 'Por Tipo', icon: 'grid' },
+  { key: 'az', label: 'A-Z', icon: 'type' },
+  { key: 'menor_preco', label: 'Menor Preço', icon: 'trending-down' },
+];
 
 const HTTP_BADGES: Array<{
   method: string;
@@ -101,14 +162,17 @@ function isIngredienteDisponivel(item: Ingrediente): boolean {
   return item.disponivel === true || item.disponivel === 1;
 }
 
-function formatTipoLabel(tipo?: string | null): string {
-  const key = String(tipo ?? 'outros').toLowerCase();
-  return TIPO_LABEL_MAP[key] ?? (tipo || 'Outros');
+function getTipoKey(tipo?: string | null): string {
+  const key = String(tipo ?? 'outros').trim().toLowerCase();
+  return TIPO_THEME_MAP[key] ? key : 'outros';
 }
 
-function getTipoIcon(tipo?: string | null): keyof typeof Feather.glyphMap {
-  const key = String(tipo ?? 'outros').toLowerCase();
-  return TIPO_ICON_MAP[key] ?? 'layers';
+function getTipoTheme(tipo?: string | null): TipoVisualTheme {
+  return TIPO_THEME_MAP[getTipoKey(tipo)] ?? TIPO_THEME_MAP.outros;
+}
+
+function formatTipoLabel(tipo?: string | null): string {
+  return getTipoTheme(tipo).label;
 }
 
 export default function IngredientesScreen() {
@@ -119,6 +183,7 @@ export default function IngredientesScreen() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTipo, setSelectedTipo] = useState<FilterTipo>('todos');
+  const [sortMode, setSortMode] = useState<IngredienteSortMode>('por_tipo');
 
   const [feedback, setFeedback] = useState<{ type: FeedbackType; message: string } | null>(
     null
@@ -172,11 +237,31 @@ export default function IngredientesScreen() {
     fetchIngredientes(false);
   }, [fetchIngredientes]);
 
+  // Mini-KPIs por categoria (Queijos · Carnes · Vegetais · Doces/Outros)
+  const categoryKpis = useMemo(() => {
+    let queijos = 0;
+    let carnes = 0;
+    let vegetais = 0;
+    let docesOutros = 0;
+    for (const item of ingredientes) {
+      const key = getTipoKey(item.tipo_ingrediente);
+      if (key === 'queijos') queijos += 1;
+      else if (key === 'carnes') carnes += 1;
+      else if (key === 'vegetais') vegetais += 1;
+      else docesOutros += 1;
+    }
+    return { queijos, carnes, vegetais, docesOutros };
+  }, [ingredientes]);
+
   const filteredIngredientes = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    return ingredientes.filter((item) => {
-      const tipo = String(item.tipo_ingrediente ?? 'outros').toLowerCase();
-      if (selectedTipo !== 'todos' && tipo !== selectedTipo) {
+    const filtered = ingredientes.filter((item) => {
+      const tipo = getTipoKey(item.tipo_ingrediente);
+      if (selectedTipo === 'doces_outros') {
+        if (tipo === 'queijos' || tipo === 'carnes' || tipo === 'vegetais') {
+          return false;
+        }
+      } else if (selectedTipo !== 'todos' && tipo !== selectedTipo) {
         return false;
       }
       if (!query) return true;
@@ -184,7 +269,39 @@ export default function IngredientesScreen() {
       const tipoLabel = formatTipoLabel(tipo).toLowerCase();
       return nome.includes(query) || tipo.includes(query) || tipoLabel.includes(query);
     });
-  }, [ingredientes, searchQuery, selectedTipo]);
+
+    const sorted = [...filtered];
+    sorted.sort((a, b) => {
+      if (sortMode === 'az') {
+        return String(a.nome_ingrediente ?? '').localeCompare(
+          String(b.nome_ingrediente ?? ''),
+          'pt-BR',
+          { sensitivity: 'base' }
+        );
+      }
+      if (sortMode === 'menor_preco') {
+        const pa = Number(a.preco_adicional ?? 0);
+        const pb = Number(b.preco_adicional ?? 0);
+        if (pa !== pb) return pa - pb;
+        return String(a.nome_ingrediente ?? '').localeCompare(
+          String(b.nome_ingrediente ?? ''),
+          'pt-BR',
+          { sensitivity: 'base' }
+        );
+      }
+      // 'por_tipo'
+      const ta = getTipoTheme(a.tipo_ingrediente).order;
+      const tb = getTipoTheme(b.tipo_ingrediente).order;
+      if (ta !== tb) return ta - tb;
+      return String(a.nome_ingrediente ?? '').localeCompare(
+        String(b.nome_ingrediente ?? ''),
+        'pt-BR',
+        { sensitivity: 'base' }
+      );
+    });
+
+    return sorted;
+  }, [ingredientes, searchQuery, selectedTipo, sortMode]);
 
   const openCreateModal = () => {
     setEditingIngrediente(null);
@@ -345,8 +462,8 @@ export default function IngredientesScreen() {
 
               <Text style={styles.heroTitle}>Ingredientes · CRUD</Text>
               <Text style={styles.heroSubtitle}>
-                Gerencie os ingredientes artesanais do forno a lenha com listagem,
-                consulta individual por ID, cadastro, edição e exclusão via Axios.
+                Gerencie os ingredientes artesanais do forno a lenha com categorias
+                coloridas, listagem, consulta por ID, cadastro, edição e exclusão via Axios.
               </Text>
 
               <View style={[styles.httpPillRow, { marginTop: 0, marginBottom: 14 }]}>
@@ -418,17 +535,145 @@ export default function IngredientesScreen() {
             />
           ) : null}
 
-          {/* Cabeçalho da listagem + contador */}
-          <View style={styles.crudHeaderRow}>
-            <View style={styles.sectionTitleRow}>
-              <View style={styles.sectionDot} />
-              <Text style={styles.sectionTitle}>Catálogo de Ingredientes</Text>
-            </View>
-            <View style={styles.crudCountBadge}>
-              <Text style={styles.crudCountText}>
-                {filteredIngredientes.length} de {ingredientes.length}
-              </Text>
-            </View>
+          {/* Barra de Mini-KPIs por Categoria (Queijos · Carnes · Vegetais · Doces/Outros) */}
+          <View style={localStyles.kpiGrid}>
+            <TouchableOpacity
+              style={[
+                localStyles.kpiCard,
+                selectedTipo === 'queijos' && {
+                  borderColor: TIPO_THEME_MAP.queijos.border,
+                  backgroundColor: TIPO_THEME_MAP.queijos.bg,
+                },
+              ]}
+              onPress={() =>
+                setSelectedTipo((prev) => (prev === 'queijos' ? 'todos' : 'queijos'))
+              }
+              activeOpacity={0.82}
+            >
+              <View
+                style={[
+                  localStyles.kpiIconBox,
+                  { backgroundColor: TIPO_THEME_MAP.queijos.bg },
+                ]}
+              >
+                <Text style={localStyles.kpiEmoji}>🧀</Text>
+              </View>
+              <View>
+                <Text
+                  style={[
+                    localStyles.kpiNumber,
+                    { color: TIPO_THEME_MAP.queijos.color },
+                  ]}
+                >
+                  {categoryKpis.queijos}
+                </Text>
+                <Text style={localStyles.kpiCaption}>Queijos</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                localStyles.kpiCard,
+                selectedTipo === 'carnes' && {
+                  borderColor: TIPO_THEME_MAP.carnes.border,
+                  backgroundColor: TIPO_THEME_MAP.carnes.bg,
+                },
+              ]}
+              onPress={() =>
+                setSelectedTipo((prev) => (prev === 'carnes' ? 'todos' : 'carnes'))
+              }
+              activeOpacity={0.82}
+            >
+              <View
+                style={[
+                  localStyles.kpiIconBox,
+                  { backgroundColor: TIPO_THEME_MAP.carnes.bg },
+                ]}
+              >
+                <Text style={localStyles.kpiEmoji}>🥓</Text>
+              </View>
+              <View>
+                <Text
+                  style={[
+                    localStyles.kpiNumber,
+                    { color: TIPO_THEME_MAP.carnes.color },
+                  ]}
+                >
+                  {categoryKpis.carnes}
+                </Text>
+                <Text style={localStyles.kpiCaption}>Carnes</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                localStyles.kpiCard,
+                selectedTipo === 'vegetais' && {
+                  borderColor: TIPO_THEME_MAP.vegetais.border,
+                  backgroundColor: TIPO_THEME_MAP.vegetais.bg,
+                },
+              ]}
+              onPress={() =>
+                setSelectedTipo((prev) => (prev === 'vegetais' ? 'todos' : 'vegetais'))
+              }
+              activeOpacity={0.82}
+            >
+              <View
+                style={[
+                  localStyles.kpiIconBox,
+                  { backgroundColor: TIPO_THEME_MAP.vegetais.bg },
+                ]}
+              >
+                <Text style={localStyles.kpiEmoji}>🌿</Text>
+              </View>
+              <View>
+                <Text
+                  style={[
+                    localStyles.kpiNumber,
+                    { color: TIPO_THEME_MAP.vegetais.color },
+                  ]}
+                >
+                  {categoryKpis.vegetais}
+                </Text>
+                <Text style={localStyles.kpiCaption}>Vegetais</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                localStyles.kpiCard,
+                selectedTipo === 'doces_outros' && {
+                  borderColor: TIPO_THEME_MAP.doces.border,
+                  backgroundColor: TIPO_THEME_MAP.doces.bg,
+                },
+              ]}
+              onPress={() =>
+                setSelectedTipo((prev) =>
+                  prev === 'doces_outros' ? 'todos' : 'doces_outros'
+                )
+              }
+              activeOpacity={0.82}
+            >
+              <View
+                style={[
+                  localStyles.kpiIconBox,
+                  { backgroundColor: TIPO_THEME_MAP.doces.bg },
+                ]}
+              >
+                <Text style={localStyles.kpiEmoji}>🍫</Text>
+              </View>
+              <View>
+                <Text
+                  style={[
+                    localStyles.kpiNumber,
+                    { color: TIPO_THEME_MAP.doces.color },
+                  ]}
+                >
+                  {categoryKpis.docesOutros}
+                </Text>
+                <Text style={localStyles.kpiCaption}>Doces/Outros</Text>
+              </View>
+            </TouchableOpacity>
           </View>
 
           {/* Barra de busca textual por nome/tipo */}
@@ -461,10 +706,20 @@ export default function IngredientesScreen() {
           >
             {FILTER_OPTIONS.map((option) => {
               const active = selectedTipo === option.key;
+              const optTheme =
+                option.key !== 'todos' ? getTipoTheme(option.key) : null;
               return (
                 <TouchableOpacity
                   key={option.key}
-                  style={[styles.filterChip, active && styles.filterChipActive]}
+                  style={[
+                    styles.filterChip,
+                    active && styles.filterChipActive,
+                    active &&
+                      optTheme && {
+                        backgroundColor: optTheme.bg,
+                        borderColor: optTheme.color,
+                      },
+                  ]}
                   onPress={() => setSelectedTipo(option.key)}
                   activeOpacity={0.8}
                 >
@@ -472,14 +727,67 @@ export default function IngredientesScreen() {
                     style={[
                       styles.filterChipText,
                       active && styles.filterChipTextActive,
+                      active && optTheme && { color: optTheme.color },
                     ]}
                   >
-                    {option.label}
+                    {optTheme ? `${optTheme.emoji} ${option.label}` : option.label}
                   </Text>
                 </TouchableOpacity>
               );
             })}
           </ScrollView>
+
+          {/* Chips de Ordenação (Por Tipo · A-Z · Menor Preço) */}
+          <View style={localStyles.sortRow}>
+            <View style={localStyles.sortTitleWrap}>
+              <Feather name="sliders" size={13} color={PIZZARIA_COLORS.gold} />
+              <Text style={localStyles.sortTitleText}>Ordenar:</Text>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={localStyles.sortScrollContent}
+            >
+              {SORT_OPTIONS.map((opt) => {
+                const active = sortMode === opt.key;
+                return (
+                  <TouchableOpacity
+                    key={opt.key}
+                    style={[localStyles.sortPill, active && localStyles.sortPillActive]}
+                    onPress={() => setSortMode(opt.key)}
+                    activeOpacity={0.8}
+                  >
+                    <Feather
+                      name={opt.icon}
+                      size={12}
+                      color={active ? '#111827' : PIZZARIA_COLORS.gold}
+                    />
+                    <Text
+                      style={[
+                        localStyles.sortPillText,
+                        active && localStyles.sortPillTextActive,
+                      ]}
+                    >
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          {/* Cabeçalho da listagem + contador */}
+          <View style={styles.crudHeaderRow}>
+            <View style={styles.sectionTitleRow}>
+              <View style={styles.sectionDot} />
+              <Text style={styles.sectionTitle}>Catálogo de Ingredientes</Text>
+            </View>
+            <View style={styles.crudCountBadge}>
+              <Text style={styles.crudCountText}>
+                {filteredIngredientes.length} de {ingredientes.length}
+              </Text>
+            </View>
+          </View>
 
           {/* Estados de carga, erro e listagem */}
           {loading && ingredientes.length === 0 ? (
@@ -547,11 +855,30 @@ export default function IngredientesScreen() {
               const disponivel = isIngredienteDisponivel(item);
               const imageUri = resolveImageUrl(item.imagem_url);
               const isFetchingThis = fetchingId === id;
+              const theme = getTipoTheme(item.tipo_ingrediente);
 
               return (
-                <View key={`ingrediente-${id}-${item.nome_ingrediente}`} style={styles.crudCard}>
+                <View
+                  key={`ingrediente-${id}-${item.nome_ingrediente}`}
+                  style={[
+                    styles.crudCard,
+                    { borderLeftWidth: 3.5, borderLeftColor: theme.color },
+                  ]}
+                >
                   <View style={styles.menuItemRow}>
-                    <View style={styles.menuThumb}>
+                    <View
+                      style={[
+                        styles.menuThumb,
+                        {
+                          width: 60,
+                          height: 60,
+                          borderRadius: 18,
+                          backgroundColor: theme.bg,
+                          borderColor: theme.border,
+                          borderWidth: 1.5,
+                        },
+                      ]}
+                    >
                       {imageUri ? (
                         <Image
                           source={{ uri: imageUri }}
@@ -559,11 +886,15 @@ export default function IngredientesScreen() {
                           resizeMode="cover"
                         />
                       ) : (
-                        <Feather
-                          name={getTipoIcon(item.tipo_ingrediente)}
-                          size={22}
-                          color={PIZZARIA_COLORS.gold}
-                        />
+                        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                          <Text style={{ fontSize: 18, lineHeight: 22 }}>{theme.emoji}</Text>
+                          <Feather
+                            name={theme.icon}
+                            size={12}
+                            color={theme.color}
+                            style={{ marginTop: 2 }}
+                          />
+                        </View>
                       )}
                     </View>
 
@@ -586,18 +917,17 @@ export default function IngredientesScreen() {
                           style={[
                             styles.tagPill,
                             {
-                              backgroundColor: 'rgba(234, 88, 12, 0.14)',
-                              borderColor: PIZZARIA_COLORS.fireBorder,
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              gap: 5,
+                              backgroundColor: theme.bg,
+                              borderColor: theme.border,
                             },
                           ]}
                         >
-                          <Text
-                            style={[
-                              styles.tagPillText,
-                              { color: PIZZARIA_COLORS.gold },
-                            ]}
-                          >
-                            {formatTipoLabel(item.tipo_ingrediente)}
+                          <Feather name={theme.icon} size={11} color={theme.color} />
+                          <Text style={[styles.tagPillText, { color: theme.color }]}>
+                            {theme.emoji} {theme.label}
                           </Text>
                         </View>
 
@@ -721,6 +1051,7 @@ export default function IngredientesScreen() {
                       </View>
                     </View>
                     <Text style={styles.modalTitle}>
+                      {getTipoTheme(detailIngrediente.tipo_ingrediente).emoji}{' '}
                       {detailIngrediente.nome_ingrediente}
                     </Text>
                     <Text style={styles.modalSubtitle}>
@@ -738,6 +1069,32 @@ export default function IngredientesScreen() {
                 </View>
 
                 <View style={styles.modalBody}>
+                  <View style={styles.crudMetaRow}>
+                    {(() => {
+                      const detailTheme = getTipoTheme(detailIngrediente.tipo_ingrediente);
+                      return (
+                        <View
+                          style={[
+                            styles.tagPill,
+                            {
+                              backgroundColor: detailTheme.bg,
+                              borderColor: detailTheme.border,
+                            },
+                          ]}
+                        >
+                          <Text style={[styles.tagPillText, { color: detailTheme.color }]}>
+                            {detailTheme.emoji} {detailTheme.label}
+                          </Text>
+                        </View>
+                      );
+                    })()}
+                    <View style={styles.tagPill}>
+                      <Text style={[styles.tagPillText, { color: PIZZARIA_COLORS.gold }]}>
+                        +{formatCurrency(detailIngrediente.preco_adicional)}
+                      </Text>
+                    </View>
+                  </View>
+
                   <View style={styles.jsonBox}>
                     <Text style={styles.jsonText}>
                       {JSON.stringify(
@@ -817,3 +1174,90 @@ export default function IngredientesScreen() {
     </PizzariaTopShell>
   );
 }
+
+const localStyles = StyleSheet.create({
+  kpiGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 12,
+  },
+  kpiCard: {
+    flexGrow: 1,
+    minWidth: '22%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 9,
+    backgroundColor: PIZZARIA_COLORS.bgCard,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: PIZZARIA_COLORS.glassBorder,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+  },
+  kpiIconBox: {
+    width: 34,
+    height: 34,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  kpiEmoji: {
+    fontSize: 16,
+  },
+  kpiNumber: {
+    fontSize: 16,
+    fontWeight: '900',
+    lineHeight: 19,
+  },
+  kpiCaption: {
+    color: PIZZARIA_COLORS.textMuted,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  sortRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  sortTitleWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  sortTitleText: {
+    color: PIZZARIA_COLORS.textSecondary,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  sortScrollContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+  },
+  sortPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(250, 204, 21, 0.10)',
+    borderWidth: 1,
+    borderColor: 'rgba(250, 204, 21, 0.32)',
+  },
+  sortPillActive: {
+    backgroundColor: PIZZARIA_COLORS.gold,
+    borderColor: '#FEF08A',
+  },
+  sortPillText: {
+    color: '#FDE68A',
+    fontSize: 11.5,
+    fontWeight: '800',
+  },
+  sortPillTextActive: {
+    color: '#111827',
+    fontWeight: '900',
+  },
+});
